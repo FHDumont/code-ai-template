@@ -1,0 +1,7 @@
+# dependências
+node_modules/
+# ambiente
+.env
+.env.local
+# SO
+.DS_Store

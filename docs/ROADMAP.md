@@ -1,0 +1,13 @@
+# ROADMAP
+
+> Fases futuras + a fase atual. **1 linha por fase** (ID + objetivo).
+> A fase sai daqui quando é concluída (vide regra de migração em AGENTS.md).
+> Veja `examples/docs/ROADMAP.md` pra um exemplo preenchido.
+
+## Atual
+
+<!-- A fase em andamento. Espelha a spec em docs/SETUP.md. -->
+
+## Próximas
+
+<!-- F-xxx — objetivo em uma linha -->
