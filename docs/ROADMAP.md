@@ -6,8 +6,7 @@
 
 ## Atual
 
-<!-- A fase em andamento. Espelha a spec em docs/SETUP.md. -->
+
 
 ## Próximas
 
-<!-- F-xxx — objetivo em uma linha -->

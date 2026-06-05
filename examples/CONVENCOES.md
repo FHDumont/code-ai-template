@@ -17,8 +17,7 @@
 ## Estrutura de arquivos
 
 - Um arquivo, uma responsabilidade clara.
-- ~300 linhas como referência de teto — acima, considerar split (mas não por princípio
-  cego: se o arquivo é coerente, deixe).
+- ~300 linhas como referência de teto — acima, considerar split (mas não por princípio cego: se o arquivo é coerente, deixe).
 - Co-locar testes: `foo.ts` + `foo.test.ts` na mesma pasta.
 
 ## Naming
@@ -45,18 +44,14 @@
 
 - Unit/integration com Vitest; e2e de UI com Playwright.
 - Testes vivem ao lado do código (`*.test.ts`).
-- Cobertura não é métrica vazia — foque em caminhos críticos (adapters, cálculo de custo,
-  roteamento de output, fluxo de aprovação, orquestração).
+- Cobertura não é métrica vazia — foque em caminhos críticos (adapters, cálculo de custo, roteamento de output, fluxo de aprovação, orquestração).
 
 ## UI
 
-- Componentes shadcn como base; wrappers customizados ao lado — não modificar o componente
-  instalado.
-- Acessibilidade: `aria-label` quando o texto não basta, foco visível, contraste AA,
-  suporte a teclado em tudo.
+- Componentes shadcn como base; wrappers customizados ao lado — não modificar o componente instalado.
+- Acessibilidade: `aria-label` quando o texto não basta, foco visível, contraste AA, suporte a teclado em tudo.
 - Desktop-first mas funcional em tablet; apps satélite mobile-friendly.
-- Estados: loading = skeleton (não spinner), empty = ilustração + CTA, error = mensagem
-  útil + retry.
+- Estados: loading = skeleton (não spinner), empty = ilustração + CTA, error = mensagem útil + retry.
 
 ## Antipadrões deste projeto
 
@@ -66,3 +61,4 @@
 - `process.env` espalhado — centralize com validação.
 - Esquecer a migration no commit — schema e migration sempre juntos.
 - Commit gigante — pequenos e semânticos; fase grande = vários commits.
+

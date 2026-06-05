@@ -1,7 +1,6 @@
 # SETUP — histórico
 
-> Specs de fases **concluídas**, na íntegra, com bloco "Notas de implementação". Mais
-> recente no topo.
+> Specs de fases **concluídas**, na íntegra, com bloco "Notas de implementação". Mais recente no topo.
 
 ---
 
@@ -13,8 +12,7 @@ Proteger as rotas de notas com um token, já que a API vai expor dados pessoais.
 
 ## Escopo
 
-**Entra:** middleware de auth Bearer; token lido de variável de ambiente; todas as rotas
-de notas protegidas. **NÃO entra:** múltiplos usuários, refresh de token, rate limiting.
+**Entra:** middleware de auth Bearer; token lido de variável de ambiente; todas as rotas de notas protegidas. **NÃO entra:** múltiplos usuários, refresh de token, rate limiting.
 
 ## Passos
 
@@ -24,19 +22,15 @@ de notas protegidas. **NÃO entra:** múltiplos usuários, refresh de token, rat
 
 ## Critério de pronto
 
-- [x] Requisição sem token válido → 401.
-- [x] Inputs do POST validados.
-- [x] docs vivos atualizados.
+- Requisição sem token válido → 401.
+- Inputs do POST validados.
+- docs vivos atualizados.
 
 ## Notas de implementação
 
-- Desvio da spec: a spec assumia o token numa única var `MC_TOKEN`, mas como o middleware
-  já precisava distinguir ausência de token (401) de token errado (403), separei em
-  validação de presença + comparação. Comportamento externo igual ao pedido.
-- Beco evitado: tentei reusar o validador de body do framework pra auth também; acoplava
-  demais. Auth ficou num middleware próprio, validação de body no handler.
-- D-validacao saiu junto: a validação de input que faltava entrou aqui de carona, já que o
-  handler estava sendo tocado de qualquer forma.
+- Desvio da spec: a spec assumia o token numa única var `MC_TOKEN`, mas como o middleware já precisava distinguir ausência de token (401) de token errado (403), separei em validação de presença + comparação. Comportamento externo igual ao pedido.
+- Beco evitado: tentei reusar o validador de body do framework pra auth também; acoplava demais. Auth ficou num middleware próprio, validação de body no handler.
+- D-validacao saiu junto: a validação de input que faltava entrou aqui de carona, já que o handler estava sendo tocado de qualquer forma.
 
 ---
 
@@ -59,13 +53,12 @@ Pôr de pé o projeto e a API mínima: criar, listar e ler notas.
 
 ## Critério de pronto
 
-- [x] Criar uma nota e recuperá-la por id.
-- [x] Listar notas.
-- [x] docs vivos criados.
+- Criar uma nota e recuperá-la por id.
+- Listar notas.
+- docs vivos criados.
 
 ## Notas de implementação
 
-- Sem desvios relevantes. A decisão de persistência virou ADR-001 (SQLite vs Postgres) —
-  o raciocínio está lá, não aqui.
-- Registrei D-paginacao: `GET /notas` devolve tudo; aceitável no MVP, vira problema com
-  volume.
+- Sem desvios relevantes. A decisão de persistência virou ADR-001 (SQLite vs Postgres) — o raciocínio está lá, não aqui.
+- Registrei D-paginacao: `GET /notas` devolve tudo; aceitável no MVP, vira problema com volume.
+

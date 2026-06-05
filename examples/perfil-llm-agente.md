@@ -1,16 +1,12 @@
 # Perfil: projetos de LLM / agentes (add-on opcional)
 
-> **Não faz parte do núcleo do template.** É um conjunto de princípios extras pra quem
-> constrói sistemas de LLM/agentes (orquestração, integração com modelos, custo de
-> inferência). Num projeto sem LLM, ignore este arquivo.
+> **Não faz parte do núcleo do template.** É um conjunto de princípios extras pra quem constrói sistemas de LLM/agentes (orquestração, integração com modelos, custo de inferência). Num projeto sem LLM, ignore este arquivo.
 
 ## Como acoplar ao seu projeto
 
 1. Copie este arquivo pra raiz do seu repo (ex.: `PERFIL-LLM.md`).
-2. Referencie no seu `AGENTS.md`, numa linha: *"Projeto de LLM/agentes — veja também
-   `PERFIL-LLM.md`."*
-3. (lado chat) Se as conversas vão discutir arquitetura de agente, suba também nos
-   **files do projeto** — é estável, como o `CONVENCOES.md`.
+2. Referencie no seu `AGENTS.md`, numa linha: *"Projeto de LLM/agentes — veja também `PERFIL-LLM.md`."*
+3. (lado chat) Se as conversas vão discutir arquitetura de agente, suba também nos **files do projeto** — é estável, como o `CONVENCOES.md`.
 
 ## Princípios
 
@@ -22,14 +18,12 @@
 
 ### Human-in-the-loop por padrão (no runtime do produto)
 
-- Toda ação que envia email, posta em rede, gasta dinheiro, ou modifica recurso externo
-  passa por pedido de aprovação **por padrão**.
+- Toda ação que envia email, posta em rede, gasta dinheiro, ou modifica recurso externo passa por pedido de aprovação **por padrão**.
 - O dono pode desativar explicitamente, mas o default é exigir aprovação.
 
 ### Config-as-Code com UI on top
 
-- Config de agent/squad/skill/tool persistida no banco também tem **representação
-  serializável** (JSON/YAML).
+- Config de agent/squad/skill/tool persistida no banco também tem **representação serializável** (JSON/YAML).
 - Operação destrutiva (delete) faz export prévio automático antes de apagar.
 
 ### Composability over hardcoding
@@ -50,6 +44,5 @@
 
 ### Cost transparency em dois eixos
 
-- Separe custo **cobrado por API** de custo **coberto por assinatura** — conflar os dois
-  produz dado enganoso. Se um executor roda sob assinatura (sem cobrança por token),
-  registre como coberto, não como zero "grátis".
+- Separe custo **cobrado por API** de custo **coberto por assinatura** — conflar os dois produz dado enganoso. Se um executor roda sob assinatura (sem cobrança por token), registre como coberto, não como zero "grátis".
+

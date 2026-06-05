@@ -19,10 +19,9 @@ O que foi decidido. Direto.
 
 ## Consequências
 
-O que isso habilita, o que custa, que trade-off aceitamos. Inclua o lado ruim — um ADR
-honesto registra o preço, não só o ganho.
+O que isso habilita, o que custa, que trade-off aceitamos. Inclua o lado ruim — um ADR honesto registra o preço, não só o ganho.
 
 ---
-> Lembrete: ADR é imutável depois de aceito. Pra mudar de ideia, escreva um novo ADR e
-> marque este como `superseded por ADR-MMM` no índice `docs/DECISOES.md`. Não edite a
-> decisão antiga nem a apague — o status carrega a história.
+
+> Lembrete: ADR é imutável depois de aceito. Pra mudar de ideia, escreva um novo ADR e marque este como `superseded por ADR-MMM` no índice `docs/DECISOES.md`. Não edite a decisão antiga nem a apague — o status carrega a história.
+

@@ -4,4 +4,3 @@
 > O detalhe cheio da fase vive em `docs/history/SETUP-HISTORICO.md` (o ponteiro é o ID).
 > Veja `examples/docs/CHANGELOG.md` pra um exemplo preenchido.
 
-<!-- mais recente no topo -->
