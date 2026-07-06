@@ -2,18 +2,26 @@
 
 Instruções para o agente de código deste projeto. **Núcleo agnóstico de ferramenta** — vale em qualquer stack e qualquer agente. Use como está.
 
-- Claude Code: veja também `CLAUDE.md`.
+- Claude Code: veja também `CLAUDE.md`. Cursor: veja `.cursor/rules/metodo.mdc`.
 - Convenções de código/UI **deste** projeto: `CONVENCOES.md`.
 - Projeto de LLM/agentes: acople o add-on opcional e referencie aqui (ex.: `PERFIL-LLM.md`). Instruções no README.
 
 ## Seu papel no loop
 
-Duas superfícies, papéis separados:
+Uma superfície, **dois modos** — os dois são você, os dois com o repo na mão:
 
-- **Chat (raciocínio):** discute e decide, e entrega uma **spec** de fase em texto. Não  escreve no repo.
-- **Você (execução):** recebe a spec, implementa aterrado no código real, e atualiza os  docs vivos numa única passada antes de encerrar.
+- **Plan mode (raciocínio):** lê os docs vivos e **audita o código real**, discute o aberto com o dono (uma pergunta por vez), e **grava a spec da fase no `docs/SETUP.md`** — e para. Não coda.
+- **Code mode (execução):** em sessão nova (contexto limpo), lê a spec do `SETUP.md`, implementa aterrado no código, roda os critérios de sucesso na mesma resposta, e atualiza os docs vivos numa única passada antes de encerrar.
 
-A spec pode citar nomes de arquivo ou símbolo — trate-os como **hipóteses**. A verdade é  o código. Se a realidade diverge da spec, implemente o que é correto e **registre a divergência** (nota na fase, ou ADR se for decisão de arquitetura).
+Como o planejador **tem o repo**, a spec nasce confirmada contra o código: nomes de arquivo e símbolo são **verificados no plan mode**, não "hipóteses a confirmar". Ainda assim a verdade é o código — se em code mode a realidade diverge da spec, implemente o que é correto e **registre a divergência** (nota na fase, ou ADR se for decisão de arquitetura).
+
+### Fluxo plan ⇄ code
+
+- **Fronteira dura entre os modos.** Plan grava a spec e para; o dono **limpa o contexto** e abre a execução numa sessão nova. Cada fase é tarefa independente — o contexto mora nos docs vivos, não na sessão. (Mecânica por ferramenta: `CLAUDE.md`, `.cursor/rules/metodo.mdc`.)
+- **Revisão de fecho com contexto fresco.** Ao fechar a fase em code mode — depois de rodar os critérios, antes do commit — dispare um **subagente sem o contexto da sessão**, que recebe só os *docs vivos + o diff* e confere se o entregue bate com a intenção da spec. Limpo → passada única de docs + commit. Divergiu → corrija antes. Fase que não toca código pode pular.
+- **Audite o estado antes de modelar.** Fase que mexe em schema, enum ou estado persistido: no plan mode, audite o código real (migrations, tipos, dados) antes de escrever a spec. Barato, e evita spec que presume estado que não existe.
+- **Não derive de modo no meio da fase.** Se, em code mode, a conversa puxa pra fora do escopo da spec atual (nova ideia, decisão de arquitetura, refatoração não pedida), **pare e pergunte ao dono**: seguir no code (dentro do escopo) ou voltar pro plan pra tratar aquilo como fase própria? Não resolva o off-spec silenciosamente no code — é o mesmo princípio de "sem refatoração de carona" e "uma fase de cada vez", aplicado à troca de modo.
+- **O plano durável é a spec.** A spec no `docs/SETUP.md` é o plano canônico (o porquê arquitetural distila em ADR; a narrativa de implementação, ao fechar, no `SETUP-HISTORICO`). O arquivo de plano nativo da ferramenta (Claude Code `~/.claude/plans`, Cursor) é **rascunho efêmero — não versiona**.
 
 ## Stack e comandos
 
@@ -26,17 +34,17 @@ A spec pode citar nomes de arquivo ou símbolo — trate-os como **hipóteses**.
 
 ## Princípios de execução
 
-Cinco falhas comuns de agente de código que este projeto evita ativamente (destiladas das observações de Andrej Karpathy sobre LLMs em código):
+Cinco falhas comuns de agente de código que este projeto evita ativamente (destiladas das observações de Andrej Karpathy sobre LLMs em código — ver [`andrej-karpathy-skills`](https://github.com/multica-ai/andrej-karpathy-skills)):
 
-1. **Trabalhe por critério de sucesso, não por receita.** Agente é ótimo em iterar até bater uma meta. Antes de codar, declare os critérios de sucesso em alto nível; implemente; verifique cada um explicitamente; itere no que falhar. Não declare "feito"  sem rodar verificação real — teste, build, execução.
-2. **Gerencie a confusão — não suponha em silêncio.** A falha mais cara é assumir algo no lugar do dono e seguir em frente sem checar. Se o requisito é ambíguo, **pergunte**. Se dois pedidos se contradizem, **aponte** antes de seguir. Se há trade-off real, **apresente** os dois lados com prós/contras. Se discorda da abordagem, **diga** com argumento técnico.
+1. **Trabalhe por critério de sucesso, não por receita.** Agente é ótimo em iterar até bater uma meta. Antes de codar, declare os critérios de sucesso em alto nível; implemente; verifique cada um explicitamente; itere no que falhar. Não declare "feito" sem rodar verificação real — teste, build, execução. Em correção de bug: escreva primeiro um teste que **reproduz** o bug e corrija só até ele passar — não "conserte de forma ampla".
+2. **Gerencie a confusão — não suponha em silêncio.** A falha mais cara é assumir algo no lugar do dono e seguir em frente sem checar. Se o requisito é ambíguo, **pergunte**. Se dois pedidos se contradizem, **aponte** antes de seguir. Se há trade-off real, **apresente** os dois lados com prós/contras. Se discorda da abordagem, **diga** com argumento técnico. Quando o escopo é incerto, **nomeie as suposições** — quais campos? qual tipo de dado? qual contrato de API? — antes de tocar no código, em vez de assumir o formato em silêncio.
 3. **Sem refatoração de carona.** Toque só no escopo da tarefa. Código feio fora do escopo vira TODO, não refatoração agora. Não remova comentário que não entendeu — pode carregar contexto. Não renomeie variável fora do escopo. Não "limpe" código alheio sem pedir.
 4. **Sem over-engineering.** Resolva o problema declarado — nem mais, nem menos. Não crie abstração "pro caso de um dia precisar"; crie quando precisar. Código direto e legível ganha de padrão complexo. YAGNI e KISS sempre.
 5. **Preserve contexto.** Antes de mudar um arquivo, leia o suficiente pra entender o que ele faz. Não delete função/import sem certeza de que não é usado. Em dúvida, mantenha.
 
 ## Docs vivos — o que são
 
-Ficam em `docs/`. São a memória compartilhada entre o chat, você, e as sessões futuras. Cada um responde a uma pergunta, no menor número de palavras:
+Ficam em `docs/`. São a memória compartilhada entre o plan, o code, e as sessões futuras. Cada um responde a uma pergunta, no menor número de palavras:
 
 
 | Doc                 | Responde                     | Forma                                 |
@@ -49,6 +57,22 @@ Ficam em `docs/`. São a memória compartilhada entre o chat, você, e as sessõ
 
 
 Detalhe pesado vive fora dos vivos: texto cheio de ADR em `docs/adr/`, specs concluídas (+ notas de implementação) em `docs/history/SETUP-HISTORICO.md`, débito fechado em `docs/history/DEBITO-RESOLVIDO.md`.
+
+**Quente vs. frio (economia de contexto).** Plan mode pré-carrega só **SETUP + ROADMAP** (e `DEBITO-TECNICO` se a fase toca área com débito conhecido). **CHANGELOG, DECISOES e o texto cheio dos ADRs são frios** — ledgers que crescem sem teto; consulte sob demanda (`grep` pelo ID), não pré-carregue.
+
+## Docs auxiliares — onde cada coisa mora
+
+Os **5 docs vivos são um conjunto fixo — não se adiciona doc vivo.** Todo o resto roteia pra um balde, pra `docs/` raiz não virar zona de documentos:
+
+| Tipo | Casa |
+| ---- | ---- |
+| decisão de arquitetura | **ADR** (`docs/adr/`) |
+| convenção de código/UI | **`CONVENCOES.md`** |
+| débito | **`DEBITO-TECNICO.md`** |
+| referência durável (how-to, deploy, prompts, i18n) | **`docs/reference/`** — cabeçalho de 1 linha dizendo pra que serve; linkada do README; lida sob demanda |
+| investigação / spike / comparação | **efêmero** — `docs/scratch/` (ignorado no git); distila num balde acima **ou é descartado**, nunca acumula |
+
+**Regra de ouro:** todo doc commitado tem uma casa e um propósito de 1 linha. Se não cabe em nenhum balde, provavelmente não deve ser commitado. **Invariante:** `docs/` raiz = só os docs vivos (+ `adr/`, `history/`).
 
 ## Regra de migração — mantenha os vivos enxutos
 
@@ -113,8 +137,6 @@ Em dúvida entre pausar ou seguir num passo **reversível e de baixo risco**, **
 ## Uma fase de cada vez
 
 `docs/SETUP.md` tem **uma** spec por vez. Implemente, atualize os vivos, **pare**, resuma ao dono e peça aprovação pra próxima. Não acumule specs. Não pule fases.
-
-> **Exceção de bootstrap:** esta regra de fluxo é a única que o chat pode redigir como texto pra você inserir — não dá pra você escrever a regra que institui o fluxo antes de ela existir.
 
 ## Em resumo
 

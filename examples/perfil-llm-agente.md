@@ -5,8 +5,7 @@
 ## Como acoplar ao seu projeto
 
 1. Copie este arquivo pra raiz do seu repo (ex.: `PERFIL-LLM.md`).
-2. Referencie no seu `AGENTS.md`, numa linha: *"Projeto de LLM/agentes — veja também `PERFIL-LLM.md`."*
-3. (lado chat) Se as conversas vão discutir arquitetura de agente, suba também nos **files do projeto** — é estável, como o `CONVENCOES.md`.
+2. Referencie no seu `AGENTS.md`, numa linha: *"Projeto de LLM/agentes — veja também `PERFIL-LLM.md`."* O plan mode lê o arquivo direto do repo quando a fase discute arquitetura de agente.
 
 ## Princípios
 
