@@ -138,6 +138,14 @@ Em dúvida entre pausar ou seguir num passo **reversível e de baixo risco**, **
 
 `docs/SETUP.md` tem **uma** spec por vez. Implemente, atualize os vivos, **pare**, resuma ao dono e peça aprovação pra próxima. Não acumule specs. Não pule fases.
 
+## Git — uma fase, uma branch, um PR
+
+- **Nunca commite no `main`.** Ele é protegido; só integra via PR. Toda fase nasce numa branch a partir do `main` atualizado.
+- **Uma fase = uma branch = um PR.** A spec pode ser entregue em **1+ etapas**, e **cada etapa é um commit** na branch da fase. Nome da branch: `fase/F-xxx-slug` (trabalho avulso fora de fase: `fix/slug`, `chore/slug`).
+- **Commits: Conventional Commits.** Prefixos `feat: fix: docs: test: refactor: chore:`; mensagem no imperativo, escopo claro, uma etapa por commit; não misture refatoração não pedida. **Nunca** adicione trailer de atribuição de IA (`Co-Authored-By` ou similar).
+- **O fecho da fase é 100% do agente.** Aprovada a fase pelo dono (o marco de fim de fase já é o gate), o agente: roda a revisão de fecho → abre o PR (corpo curto: o que/por quê + critérios, referência à `F-xxx`) via `gh`/CLI do forge → confirma checks verdes → **merge → push → apaga a branch**. O dono não toca no GitHub.
+- **Sem reescrever história publicada.** `rebase`/`amend`/`force-push` só no que ainda é local; nunca numa branch já em PR. (Config do repo: `main` protegido exigindo PR + checks verdes, mas permitindo o merge do agente — senão o loop trava.)
+
 ## Em resumo
 
 > Pergunte mais. Codifique menos. Verifique sempre.
