@@ -5,3 +5,5 @@ node_modules/
 .env.local
 # SO
 .DS_Store
+# investigações/spikes efêmeros e planos de rascunho da ferramenta (não versionar)
+docs/scratch/

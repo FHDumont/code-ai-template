@@ -25,7 +25,7 @@ Permitir associar tags a uma nota e listar notas por tag, pra organizar conforme
 2. Aceitar `tags` no `POST /notas` e devolvê-las no `GET /notas/:id`.
 3. Implementar o filtro `?tag=` no `GET /notas`.
 
-> Nomes de arquivo/símbolo: o agente confirma no código (a spec assume `notes.ts` e a migração em `db/`, mas é hipótese).
+> Nomes de arquivo/símbolo: auditados no plan mode contra o código (`notes.ts` e a migração em `db/` já verificados).
 
 ## Critério de pronto
 

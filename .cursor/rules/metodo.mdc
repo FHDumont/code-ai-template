@@ -1,0 +1,11 @@
+---
+description: Método de trabalho do projeto (loop plan/code, docs vivos)
+alwaysApply: true
+---
+
+`AGENTS.md` é a instrução canônica — leia primeiro. Aqui só a mecânica do loop no Cursor.
+
+- **Passada de raciocínio:** use o modo **Plan** (ou Ask) pra auditar o código, discutir o aberto com o dono e **redigir a spec em `docs/SETUP.md`**. Não coda nessa passada.
+- **Fronteira entre modos:** aprovada a spec, abra um **New Chat** (equivalente ao `/clear`) e execute numa sessão limpa, lendo só o `SETUP.md`.
+- **Revisão de fecho:** ao fechar a fase, rode um subagente/background agent de **contexto fresco** com só os docs vivos + o diff, conferindo entregue-vs-spec antes do commit.
+- **Docs vivos numa passada só** antes do commit (regra de migração no `AGENTS.md`).

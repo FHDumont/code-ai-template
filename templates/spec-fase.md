@@ -1,8 +1,8 @@
 # Spec de fase — formato
 
-> Modelo de uma spec emitida pelo chat e colada em `docs/SETUP.md`.
+> Modelo de uma spec **redigida no plan mode** em `docs/SETUP.md`.
 >
-> Mantenha enxuto: a spec diz **o que** e **por quê**, o agente decide o **como** aterrado no código.
+> Mantenha enxuto: a spec diz **o que** e **por quê**; o code mode decide o **como** aterrado no código.
 
 ---
 
@@ -27,7 +27,7 @@ Uma a três linhas: o que esta fase entrega e por quê.
 1. ...
 2. ...
 
-> Nomes de arquivo/símbolo abaixo são hipóteses — confirme no código.
+> Nomes de arquivo/símbolo abaixo já foram auditados no plan mode contra o código.
 
 ## Critério de pronto
 
