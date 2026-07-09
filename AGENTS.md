@@ -32,6 +32,11 @@ Como o planejador **tem o repo**, a spec nasce confirmada contra o código: nome
 > - Lint/format: `...`
 > - Run local: `...`
 
+Duas regras valem em qualquer stack:
+
+- **Markdown sem quebra de linha no meio do parágrafo.** Em **qualquer** `.md` (não só os vivos), cada parágrafo/bullet/célula é **uma única linha física**, por mais longa que fique — o wrap é do editor/render. Quebra de linha só **entre** parágrafos. Hard-wrap mid-parágrafo polui o diff e quebra tabelas. Não rode formatador automático nos `.md` (corrompe tabelas; edite à mão).
+- **O ambiente é do dono — não suba nem derrube.** O dono roda e para o ambiente **manualmente**. O agente **não tenta subir o ambiente** nem fica insistindo em levantar dev servers/containers do stack; se precisar do ambiente **reiniciado**, **peça ao dono**. Trabalho que **não** depende do ambiente rodando — build, typecheck, lint, testes, leitura de código — é livre e não precisa pedir.
+
 ## Princípios de execução
 
 Cinco falhas comuns de agente de código que este projeto evita ativamente (destiladas das observações de Andrej Karpathy sobre LLMs em código — ver [`andrej-karpathy-skills`](https://github.com/multica-ai/andrej-karpathy-skills)):
@@ -72,7 +77,7 @@ Os **5 docs vivos são um conjunto fixo — não se adiciona doc vivo.** Todo o 
 | referência durável (how-to, deploy, prompts, i18n) | **`docs/reference/`** — cabeçalho de 1 linha dizendo pra que serve; linkada do README; lida sob demanda |
 | investigação / spike / comparação | **efêmero** — `docs/scratch/` (ignorado no git); distila num balde acima **ou é descartado**, nunca acumula |
 
-**Regra de ouro:** todo doc commitado tem uma casa e um propósito de 1 linha. Se não cabe em nenhum balde, provavelmente não deve ser commitado. **Invariante:** `docs/` raiz = só os docs vivos (+ `adr/`, `history/`).
+**Regra de ouro:** todo doc commitado tem uma casa e um propósito de 1 linha. Se não cabe em nenhum balde, provavelmente não deve ser commitado. **Invariante:** `docs/` raiz = só os docs vivos (+ `adr/`, `history/`, `reference/`).
 
 ## Regra de migração — mantenha os vivos enxutos
 
