@@ -57,7 +57,7 @@ Ficam em `docs/`. São a memória compartilhada entre o plan, o code, e as sess�
 | `ROADMAP.md`        | pra onde vamos               | fases futuras + a atual; 1 linha cada |
 | `CHANGELOG.md`      | o que já entrou              | ledger: 1 linha por fase entregue     |
 | `DECISOES.md`       | o que foi decidido e por quê | índice: 1 linha por ADR               |
-| `DEBITO-TECNICO.md` | o que está aberto            | só débito ativo                       |
+| `DEBITO-TECNICO.md` | o que está aberto            | só débito ativo; **máx. 3 frases** cada |
 | `SETUP.md`          | o que estamos fazendo agora  | exatamente 1 spec                     |
 
 
@@ -116,7 +116,9 @@ A regra mais importante. O detalhe de "como/por quê" tem três destinos, por ti
 
 **Princípio do ponteiro:** ao resumir numa linha, a linha referencia onde está o detalhe (o ID da fase no SETUP-HISTORICO, o ID do ADR). Nunca resuma sem ponteiro.
 
-**Débito nunca é descartado em silêncio.** Pra depois → vira linha em DEBITO-TECNICO (ID + 1 linha + severidade). Resolvido → migra. Aceito como limitação → registra como tal. Some sem registro → nunca.
+**Teto por item, e ele é um teto — não uma licença.** Item de `DEBITO-TECNICO`: **no máximo 3 frases** — o defeito com `arquivo:linha`, a consequência prática, e `Correção:` nomeada. Linha de `ROADMAP`: **uma**, com ID + objetivo + o que a fase fecha. Tudo que é *porquê histórico* — que fase criou, o que foi tentado, o que o dono recusou, como a fase foi fatiada — sai pro ADR ou pra entrada da fase no `SETUP-HISTORICO`, **com ponteiro**. O objetivo é **menos contexto por leitura**: a versão anterior desta regra pedia "1 linha", era violada por todos os itens ao mesmo tempo e portanto não segurava nada. Ao cortar, o `Correção:` é a única parte que **não** pode sair — é a única acionável.
+
+**Débito nunca é descartado em silêncio.** Pra depois → vira item em DEBITO-TECNICO (ID + até 3 frases + severidade). Resolvido → migra. Aceito como limitação → registra como tal. Some sem registro → nunca.
 
 ## Quando pedir confirmação
 
