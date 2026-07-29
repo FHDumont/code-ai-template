@@ -65,6 +65,12 @@ Detalhe pesado vive fora dos vivos: texto cheio de ADR em `docs/adr/`, specs con
 
 **Quente vs. frio (economia de contexto).** Plan mode pré-carrega só **SETUP + ROADMAP** (e `DEBITO-TECNICO` se a fase toca área com débito conhecido). **CHANGELOG, DECISOES e o texto cheio dos ADRs são frios** — ledgers que crescem sem teto; consulte sob demanda (`grep` pelo ID), não pré-carregue.
 
+## Inbox de achados — GitHub Issues
+
+Fora dos docs vivos existe um inbox informal: **issues do GitHub com label `achado`**, template em `.github/ISSUE_TEMPLATE/achado.md`. É onde o dono registra, a qualquer momento e sem fricção, um problema isolado ou um conjunto de problemas/melhorias que encontrou usando o app — sem precisar abrir editor nem achar onde anotar.
+
+**Issue não é spec.** É matéria-prima solta, lida e triada só em plan mode: no início de toda sessão de plan mode, rode `gh issue list --label achado --state open` e leia o que houver. Cada item vira uma das três coisas — entra na spec da fase em andamento (se couber no escopo já decidido), vira `ROADMAP.md` como fase própria (se for maior), ou vira ADR/linha em `DEBITO-TECNICO.md` (se for decisão registrada, não trabalho). Depois de triado, **feche a issue** (`gh issue close`) referenciando onde o conteúdo foi pra — a fase no `SETUP.md`/`ROADMAP.md`, o ID do ADR, ou o ID do débito. Issue aberta e sem dono depois do plan mode é sinal de que a triagem ficou pela metade.
+
 ## Docs auxiliares — onde cada coisa mora
 
 Os **5 docs vivos são um conjunto fixo — não se adiciona doc vivo.** Todo o resto roteia pra um balde, pra `docs/` raiz não virar zona de documentos:
