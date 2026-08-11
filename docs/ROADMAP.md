@@ -6,7 +6,7 @@
 
 ## Atual
 
-
+- **F-metodo-v2** — absorver o melhor do mattpocock/skills: auditoria do AGENTS.md, CONTEXT.md, skills do loop, git guardrails e vigilância da referência. Fecha quando as 4 skills forem invocáveis, o hook bloquear git destrutivo e a referência estiver registrada com SHA.
 
 ## Próximas
 
