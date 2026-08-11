@@ -34,6 +34,12 @@ AGENTS.md                  instruções do agente (núcleo agnóstico) — use c
 CLAUDE.md                  flavor Claude Code (mecânica do loop) → aponta pro AGENTS.md
 .cursor/rules/metodo.mdc   flavor Cursor (mesma mecânica) → aponta pro AGENTS.md
 CONVENCOES.md              padrões de código/UI DESTE projeto (preencha; estável)
+CONTEXT.md                 linguagem ubíqua: 1 termo por conceito (preencha; cresce sozinho)
+
+.claude/                   mecânica executável do loop (Claude Code)
+├─ skills/                 rituais: planejar-fase, fechar-fase, verificar-referencia, grilling
+├─ hooks/                  block-dangerous-git.sh — git destrutivo e commit no main viram erro
+└─ settings.json           registra o hook como PreToolUse/Bash
 
 docs/                      ← só arquivos VIVOS (estado atual)
 ├─ ROADMAP.md              fases futuras + a atual; 1 linha por fase
@@ -48,6 +54,7 @@ docs/                      ← só arquivos VIVOS (estado atual)
 │  ├─ SETUP-HISTORICO.md   specs concluídas + notas de implementação
 │  └─ DEBITO-RESOLVIDO.md  débito fechado, com nota de resolução
 ├─ reference/              (sob demanda) referência durável: how-to, deploy, prompts…
+│  └─ referencias.md       repos externos vigiados + o SHA até onde já revisamos
 └─ scratch/                (ignorado no git) investigações/spikes efêmeros
 
 templates/                 scaffolding reutilizável
@@ -56,6 +63,7 @@ templates/                 scaffolding reutilizável
 examples/                  PREENCHIDO — leia pra ver o método rodando
 ├─ docs/                   espelho de docs/ com o projeto-brinquedo "Recados"
 ├─ CONVENCOES.md           exemplo de convenções (stack TypeScript)
+├─ CONTEXT.md              exemplo de linguagem ubíqua (projeto "Recados")
 └─ perfil-llm-agente.md    add-on opcional pra projetos de LLM/agentes (ver abaixo)
 ```
 
@@ -74,7 +82,7 @@ Os de `examples/` vêm **preenchidos** com um projeto-brinquedo coerente ("Recad
 3. **Configure o agente:** o `AGENTS.md` é o núcleo — use como está, ajuste só a seção de stack/comandos. A mecânica por ferramenta já vem pronta: `CLAUDE.md` (Claude Code) e `.cursor/rules/metodo.mdc` (Cursor).
 4. **Preencha o** `CONVENCOES.md` com os padrões de código/UI do seu projeto (use `examples/CONVENCOES.md` como molde). Sem convenções fortes ainda? Deixe mínimo e cresça depois.
 5. **Defina o ROADMAP:** preencha `docs/ROADMAP.md` com as fases de um MVP enxuto, 1 linha cada.
-6. **Rode o loop:** plan mode audita o código e grava a spec da fase em `docs/SETUP.md` → você aprova e limpa o contexto (`/clear` no Claude Code, New Chat no Cursor) → code mode executa, roda a revisão de fecho e atualiza os vivos → você aprova a fase → repete.
+6. **Rode o loop:** plan mode audita o código e grava a spec da fase em `docs/SETUP.md` → você aprova e limpa o contexto (`/clear` no Claude Code, New Chat no Cursor) → code mode executa, roda a revisão de fecho e atualiza os vivos → você aprova a fase → repete. No Claude Code, os rituais já vêm como skills: `/planejar-fase` e `/fechar-fase`.
 7. **(Opcional) apague `examples/`** quando não precisar mais da referência.
 
 ### Exemplo: as primeiras interações
@@ -129,6 +137,18 @@ planeja a próxima fase     →  aprovo e /clear  →  executa a fase do SETUP
 As instruções de acoplamento também estão no topo do próprio arquivo, pra quem abrir ele direto sem passar pelo README.
 
 ---
+
+## Complementos — biblioteca de skills de engenharia
+
+O template traz as skills do **loop** (planejar, fechar, vigiar a referência, grilling) e para aí de propósito: ele é um método, não uma caixa de ferramentas. Pro trabalho de engenharia dentro de uma fase — escrever teste antes, caçar bug, revisar código, prototipar, pesquisar — vale instalar uma biblioteca pronta em vez de escrever a sua.
+
+A recomendação é o plugin **`mattpocock-skills`** ([mattpocock/skills](https://github.com/mattpocock/skills)), de onde parte do método daqui já foi portada:
+
+```bash
+claude plugins install mattpocock-skills
+```
+
+Vale por `tdd`, `diagnosing-bugs`, `code-review`, `prototype` e `research` — todas encaixam **dentro** de uma fase, no code mode, sem competir com o loop. É **opcional e não é dependência**: nada aqui deixa de funcionar sem ele, e o método não referencia nenhuma skill dele. O repo fica registrado em `docs/reference/referencias.md` e é revisitado pela skill `/verificar-referencia`.
 
 ## Quando escalar pra ecossistema multi-repo
 
