@@ -32,9 +32,10 @@ Uma a três linhas: o que esta fase entrega e por quê.
 ## Etapas
 
 > Opcional. A fase pode ser entregue em **1+ etapas**, e **cada etapa é um commit** na branch da fase (regra de git no `AGENTS.md`). Liste aqui quando a spec se beneficia de fatiar; senão, omita e trate como etapa única.
+> Etapa que pede model/effort diferente do da sessão ganha o sufixo **`delegar a subagente: <modelo> · <effort>`** — o code mode obedece automaticamente. Delegue só a etapa **mecânica e autocontida** (a descrição da etapa carrega todo o contexto necessário; subagente não herda o fio da sessão).
 
 1. **Etapa 1 — ...** · commit: `feat: ...`
-2. **Etapa 2 — ...** · commit: `feat: ...`
+2. **Etapa 2 — ...** · commit: `feat: ...` · delegar a subagente: `<modelo> · <effort>`
 
 ## Critério de pronto
 
@@ -49,5 +50,5 @@ Uma a três linhas: o que esta fase entrega e por quê.
 
 ---
 
-Model/effort de execução: `<modelo> · <effort>`
+Model/effort de execução: `<modelo> · <effort>` — **um só pra sessão inteira** (o dono seta ao abrir o code mode). Variação por etapa vive nas Etapas, como `delegar a subagente`.
 

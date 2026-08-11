@@ -7,5 +7,5 @@ alwaysApply: true
 
 - **Passada de raciocínio:** use o modo **Plan** (ou Ask) pra auditar o código, discutir o aberto com o dono e **redigir a spec em `docs/SETUP.md`**. Não coda nessa passada.
 - **Fronteira entre modos:** aprovada a spec, abra um **New Chat** (equivalente ao `/clear`) e execute numa sessão limpa, lendo só o `SETUP.md`.
-- **Revisão de fecho:** ao fechar a fase, rode um subagente/background agent de **contexto fresco** com só os docs vivos + o diff, conferindo entregue-vs-spec antes do commit.
-- **Docs vivos numa passada só** antes do commit (regra de migração no `AGENTS.md`).
+- **Subagentes:** a revisão de fecho de contexto fresco (`AGENTS.md` §O loop) e as etapas marcadas `delegar a subagente` na spec rodam como background agent.
+- **Model/effort:** o dono seta um model/effort por sessão; a spec termina recomendando qual, e etapa que pede outro entra como `delegar a subagente: <modelo> · <effort>` (detalhe em `CLAUDE.md` §Model e effort).
