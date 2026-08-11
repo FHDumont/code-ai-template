@@ -8,7 +8,7 @@ Ritual de abertura do **plan mode**. As regras vivem em `AGENTS.md` (§O loop, �
 
 Entre em plan mode antes do passo 1 — esta passada raciocina e escreve spec, e não toca em código.
 
-1. **Esvazie o inbox.** `gh issue list --label achado --state open` e leia o que houver. Não triе ainda: o achado pode caber na fase que você está prestes a desenhar, e você só saberá depois de auditar.
+1. **Esvazie o inbox.** `gh issue list --label achado --state open` e leia o que houver. Deixe a triagem pro passo 6: o achado pode caber na fase que você está prestes a desenhar, e você só saberá depois de auditar.
 2. **Carregue os vivos quentes.** `docs/SETUP.md` (a fase atual — se tiver spec aberta, a fase ainda não fechou: pare e diga isso ao dono), `docs/ROADMAP.md` (o que vem) e `CONTEXT.md` (o vocabulário). Toque em área com débito conhecido? Some `docs/DEBITO-TECNICO.md`. `CHANGELOG` e `DECISOES` são frios: `grep` pelo ID quando precisar de um.
 3. **Audite o código real.** A fase candidata mexe em schema, enum ou estado persistido? Leia migrations, tipos e dados antes de qualquer pergunta — spec que presume estado inexistente custa uma fase inteira. Nomes de arquivo e símbolo que entrarem na spec saem daqui verificados. Dispare subagentes pra varrer em paralelo.
 4. **Declare seu model/effort** ao dono e, se ele estiver sub ou superdimensionado pra esta fase, **peça a troca antes de seguir** — sem esperar ele perguntar (`CLAUDE.md` §Model e effort).
