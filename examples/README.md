@@ -13,6 +13,10 @@ Projeto-brinquedo "Recados" (uma API de notas self-hosted). Leia nesta ordem pra
 
 Repare em como cada doc vivo fica curto e o detalhe mora atrás de um ponteiro (o ID da fase, o ID do ADR). Esse é o ponto todo.
 
+## `CONTEXT.md` — exemplo de linguagem ubíqua
+
+O glossário do domínio do "Recados": um termo por conceito, definição de uma linha, sinônimos descartados sob `_Evitar_`. Repare que só entra termo que significa algo **neste** domínio — nada de conceito geral de programação. Use como molde pro `CONTEXT.md` da raiz.
+
 ## `CONVENCOES.md` — exemplo de convenções
 
 Padrões de código/UI preenchidos pra um stack TypeScript. Mostra a forma; o conteúdo é por-projeto. Use como molde pro `CONVENCOES.md` da raiz.
