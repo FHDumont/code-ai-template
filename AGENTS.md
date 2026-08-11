@@ -3,7 +3,7 @@
 Instruções para o agente de código deste projeto. **Núcleo agnóstico de ferramenta** — vale em qualquer stack e qualquer agente. Use como está.
 
 - Mecânica por ferramenta: `CLAUDE.md` (Claude Code), `.cursor/rules/metodo.mdc` (Cursor).
-- Convenções de código/UI **deste** projeto: `CONVENCOES.md`.
+- Convenções de código/UI **deste** projeto: `CONVENCOES.md`. Linguagem ubíqua do domínio: `CONTEXT.md`.
 - Projeto de LLM/agentes: acople o add-on opcional e referencie aqui (ex.: `PERFIL-LLM.md`). Instruções no README.
 
 ## O loop — plan e code
@@ -63,13 +63,15 @@ Ficam em `docs/`. São a memória compartilhada entre o plan, o code, e as sess�
 
 Detalhe pesado vive fora dos vivos: texto cheio de ADR em `docs/adr/`, specs concluídas (+ notas de implementação) em `docs/history/SETUP-HISTORICO.md`, débito fechado em `docs/history/DEBITO-RESOLVIDO.md`.
 
-**Quente vs. frio (economia de contexto).** Plan mode pré-carrega só **SETUP + ROADMAP** (e `DEBITO-TECNICO` se a fase toca área com débito conhecido). **CHANGELOG, DECISOES e o texto cheio dos ADRs são frios** — ledgers que crescem sem teto; consulte sob demanda (`grep` pelo ID).
+**Quente vs. frio (economia de contexto).** Plan mode pré-carrega só **SETUP + ROADMAP + `CONTEXT.md`** (e `DEBITO-TECNICO` se a fase toca área com débito conhecido). **CHANGELOG, DECISOES e o texto cheio dos ADRs são frios** — ledgers que crescem sem teto; consulte sob demanda (`grep` pelo ID).
+
+**Linguagem ubíqua.** O `CONTEXT.md` na raiz é o glossário do domínio: um termo por conceito, definição de uma linha, sinônimos sob `Evitar`. Ele entra no pré-carregado porque a spec e o código herdam o vocabulário dele. Termo afiado numa conversa de plan mode é registrado ali na mesma passada.
 
 ## Inbox de achados — GitHub Issues
 
 Fora dos docs vivos existe um inbox informal: **issues do GitHub com label `achado`**, template em `.github/ISSUE_TEMPLATE/achado.md`. É onde o dono registra, a qualquer momento e sem fricção, um problema isolado ou um conjunto de problemas/melhorias que encontrou usando o app — sem precisar abrir editor nem achar onde anotar.
 
-**Issue é matéria-prima solta, não spec** — lida e triada só em plan mode: no início de toda sessão de plan mode, rode `gh issue list --label achado --state open` e leia o que houver. Cada item vira uma das três coisas — entra na spec da fase em andamento (se couber no escopo já decidido), vira linha no `ROADMAP.md` como fase própria (se for maior), ou vira ADR/item de `DEBITO-TECNICO.md` (se for decisão registrada, não trabalho). Depois de triado, **feche a issue** (`gh issue close`) referenciando o destino — a fase no `SETUP.md`/`ROADMAP.md`, o ID do ADR, ou o ID do débito. Issue aberta e sem destino depois do plan mode é sinal de triagem pela metade.
+**Issue é matéria-prima solta, não spec** — lida e triada só em plan mode: no início de toda sessão de plan mode, rode `gh issue list --label achado --state open` e leia o que houver. Cada item vira uma das três coisas — entra na spec da fase em andamento (se couber no escopo já decidido), vira linha no `ROADMAP.md` como fase própria (se for maior), ou vira ADR/item de `DEBITO-TECNICO.md` (se for decisão registrada, não trabalho). Achado avaliado e recusado tem destino próprio: **ADR com status `rejeitado`** registrando o porquê do "não". Depois de triado, **feche a issue** (`gh issue close`) referenciando o destino — a fase no `SETUP.md`/`ROADMAP.md`, o ID do ADR (aceito ou rejeitado), ou o ID do débito. Issue aberta e sem destino depois do plan mode é sinal de triagem pela metade.
 
 ## Docs auxiliares — onde cada coisa mora
 
@@ -108,6 +110,7 @@ A regra mais importante. O detalhe de "como/por quê" tem três destinos, por ti
 1. Escreva o ADR completo em `docs/adr/ADR-NNN.md` (use `docs/adr/TEMPLATE.md`).
 2. Adicione **uma linha** ao índice `docs/DECISOES.md`: `ADR-NNN — título — status`.
 3. ADR aceito é imutável. Pra revogar, crie um novo ADR e mude o **status** do antigo pra `superseded por ADR-MMM` no índice — o antigo permanece visível, sempre.
+4. **Decidir não fazer também é decisão:** proposta avaliada e recusada vira ADR com status `rejeitado` — mesmo formato, com o porquê da recusa nas Consequências. É o que impede a ideia de voltar à mesa a cada seis meses, e o ponteiro pra onde o "não" foi argumentado.
 
 **Ao resolver um débito:**
 

@@ -1,6 +1,6 @@
 # ADR-NNN — Título curto da decisão
 
-- **Status:** proposed | accepted | superseded por ADR-MMM | deprecated
+- **Status:** proposed | accepted | `rejeitado` | superseded por ADR-MMM | deprecated
 - **Data:** AAAA-MM-DD
 - **Fase:** F-xxx (se aplicável)
 
@@ -24,4 +24,5 @@ O que isso habilita, o que custa, que trade-off aceitamos. Inclua o lado ruim �
 ---
 
 > Lembrete: ADR é imutável depois de aceito. Pra mudar de ideia, escreva um novo ADR e marque este como `superseded por ADR-MMM` no índice `docs/DECISOES.md`. Não edite a decisão antiga nem a apague — o status carrega a história.
+> Status `rejeitado`: use quando a decisão foi **avaliar e não fazer**. A "Decisão" é o não; as "Alternativas consideradas" incluem fazer; as "Consequências" carregam o porquê da recusa e o que aceitamos viver sem. É o registro que fecha o assunto — e o ponteiro pra quando ele voltar.
 
