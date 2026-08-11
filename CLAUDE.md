@@ -21,6 +21,7 @@ A quarta, `grilling`, é a primitiva model-invoked por trás do `/planejar-fase`
 - **Inbox de achados no início do plan mode:** `gh issue list --label achado --state open` antes de auditar o código. Triagem e fecho de issue seguem `AGENTS.md` §Inbox de achados.
 - **Subagentes = `Task`.** A revisão de fecho de contexto fresco (`AGENTS.md` §O loop) roda como subagente via `Task`, com só os docs vivos + o diff; etapa marcada `delegar a subagente` na spec também.
 - **Fecho da fase via `gh`.** Rode os critérios + revisão de fecho e **pare** pra validação do dono; **depois de liberado**, execute o fecho inteiro sem parar: PR → merge `--rebase` → apaga a branch (remota + local) → `git switch main && git pull`. Ao terminar, `git branch` mostra só `main` atualizado. (Regra canônica: `AGENTS.md` §Git.)
+- **Git destrutivo é bloqueado por hook.** `.claude/hooks/block-dangerous-git.sh`, registrado como PreToolUse/Bash em `.claude/settings.json`, barra `push --force`, `reset --hard`, `clean -f`, `branch -D` e `commit` com o branch atual em `main` — as regras de `AGENTS.md` §Git viradas guardrail duro. A mensagem do bloqueio traz a rota certa; siga por ela ou peça ao dono, sem contornar o hook.
 - **Prompts curtos:** o dono aciona fases com instruções curtas (ex.: "planeja a próxima fase", "executa a fase do SETUP") ou pela skill do ritual. O contexto vem dos docs vivos, não do prompt.
 
 ## Model e effort
