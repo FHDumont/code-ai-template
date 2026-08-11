@@ -1,6 +1,6 @@
 # ADR-NNN — Título curto da decisão
 
-- **Status:** proposed | accepted | `rejeitado` | superseded por ADR-MMM | deprecated
+- **Status:** proposed | accepted | rejeitado | superseded por ADR-MMM | deprecated
 - **Data:** AAAA-MM-DD
 - **Fase:** F-xxx (se aplicável)
 
