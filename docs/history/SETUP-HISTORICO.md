@@ -5,3 +5,4 @@
 ---
 
 - F-metodo-v2 — Absorver o melhor do mattpocock/skills no template → [`fases/F-metodo-v2.md`](fases/F-metodo-v2.md)
+- F-metodo-v3 — ADR vira exceção, histórico por fase, grilling proporcional → [`fases/F-metodo-v3.md`](fases/F-metodo-v3.md)
