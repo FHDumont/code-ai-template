@@ -16,7 +16,7 @@ A quarta, `grilling`, é a primitiva model-invoked por trás do `/planejar-fase`
 
 ## Mecânica no Claude Code
 
-- **Plan mode = a passada de raciocínio.** Nele você audita o código, discute o aberto e **redige a spec no `docs/SETUP.md`**. `ExitPlanMode` (aprovação do plano) = aprovação da spec. Não planeje o trivial.
+- **Plan mode = a passada de raciocínio.** Nele você audita o código, discute o aberto e **redige a spec**. O plan mode não escreve em `docs/SETUP.md` — a spec nasce no arquivo de plano, `ExitPlanMode` (aprovação do plano) = aprovação da spec, e a sessão de execução a copia pro `SETUP.md` no primeiro commit. Não planeje o trivial: o passo zero do `grilling` decide se a fase é correção (zero ou uma rodada) ou modelagem (rodadas).
 - **`/clear` entre os modos** (não `/compact`): aprovada a spec, o dono limpa o contexto e a execução roda numa sessão nova, lendo só o `SETUP.md`.
 - **Inbox de achados no início do plan mode:** `gh issue list --label achado --state open` antes de auditar o código. Triagem e fecho de issue seguem `AGENTS.md` §Inbox de achados.
 - **Subagentes = `Task`.** A revisão de fecho de contexto fresco (`AGENTS.md` §O loop) roda como subagente via `Task`, com só os docs vivos + o diff; etapa marcada `delegar a subagente` na spec também.

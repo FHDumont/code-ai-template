@@ -23,7 +23,7 @@ Doc vivo responde **onde estamos / pra onde vamos / o que está aberto**, no men
 
 Resumir só é seguro com **ponteiro**: cada linha resumida referencia onde está o detalhe. Resumo sem ponteiro é perda; resumo com ponteiro é compressão.
 
-O "como/por quê" de uma fase tem três destinos por tipo: **decisão de arquitetura** → ADR; **narrativa de implementação** (desvios, soluções não-óbvias) → bloco de notas anexado à fase no SETUP-HISTORICO; **o diff literal** → git. As regras mecânicas de migração (quando mover o quê pra onde) estão em `AGENTS.md`.
+O "como/por quê" de uma fase tem quatro destinos por tipo: **decisão de arquitetura** → ADR (só o que passa no teste "ADR ou regra?" do `AGENTS.md`); **regra de comportamento** → `R-NNN` em `docs/reference/`; **narrativa de implementação** (desvios, soluções não-óbvias) → bloco de notas anexado à fase no SETUP-HISTORICO; **o diff literal** → git. As regras mecânicas de migração (quando mover o quê pra onde) estão em `AGENTS.md`.
 
 ---
 
@@ -51,7 +51,8 @@ docs/                      ← só arquivos VIVOS (estado atual)
 │  ├─ TEMPLATE.md          modelo de ADR
 │  └─ ADR-000.md           convenção de numeração
 ├─ history/                arquivado (imutável)
-│  ├─ SETUP-HISTORICO.md   specs concluídas + notas de implementação
+│  ├─ SETUP-HISTORICO.md   índice: 1 linha por fase concluída
+│  ├─ fases/F-xxx.md       spec concluída + notas de implementação, um arquivo por fase
 │  └─ DEBITO-RESOLVIDO.md  débito fechado, com nota de resolução
 ├─ reference/              (sob demanda) referência durável: how-to, deploy, prompts…
 │  └─ referencias.md       repos externos vigiados + o SHA até onde já revisamos

@@ -7,7 +7,8 @@
 > ADR superseded **fica aqui** — a linha é a trilha de "por que X não vale mais".
 > Veja `examples/docs/DECISOES.md` pra um exemplo preenchido.
 >
-> Escape hatch (YAGNI, só se passar de ~100 entradas e o scan incomodar): secionar dentro deste mesmo arquivo (Ativos no topo, Superseded/Deprecated embaixo). Não criar history pra decisões — quebraria a trilha.
+> Status extra: `regra R-NNN` = o ADR foi relido e virou regra de comportamento em `docs/reference/` (a linha fica: é o ponteiro que mantém toda citação viva; o arquivo do ADR sai).
+> **Secionado por assunto**, seções fixas do projeto (uma tabela por seção, ex.: Método · Plataforma · Domínio A · Domínio B · UI). ADR novo entra na seção dele, não no fim. Não criar history pra decisões — quebraria a trilha. Emenda não vai na linha: vai no bloco `## Emendas` do ADR emendado (ver `docs/adr/TEMPLATE.md`).
 
 
 | ADR | Título | Status |
