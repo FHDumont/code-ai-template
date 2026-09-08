@@ -16,8 +16,8 @@ A quarta, `grilling`, é a primitiva model-invoked por trás do `/planejar-fase`
 
 ## Mecânica no Claude Code
 
-- **Plan mode = a passada de raciocínio.** Nele você audita o código, discute o aberto e **redige a spec**. O plan mode não escreve em `docs/SETUP.md` — a spec nasce no arquivo de plano, `ExitPlanMode` (aprovação do plano) = aprovação da spec, e a sessão de execução a copia pro `SETUP.md` no primeiro commit. Não planeje o trivial: o passo zero do `grilling` decide se a fase é correção (zero ou uma rodada) ou modelagem (rodadas).
-- **`/clear` entre os modos** (não `/compact`): aprovada a spec, o dono limpa o contexto e a execução roda numa sessão nova, lendo só o `SETUP.md`.
+- **Plan mode = a passada de raciocínio.** Nele você audita o código, discute o aberto e **redige a spec** no formato de `templates/spec-fase.md`. `docs/SETUP.md` continua sendo o plano canônico (`AGENTS.md`); a mecânica do Claude Code é que o plan mode **não grava arquivos do repo**, então a spec nasce no arquivo de plano da ferramenta, `ExitPlanMode` (aprovação do plano) = aprovação da spec, e o **primeiro ato do code mode é copiá-la, sem alteração, pro `docs/SETUP.md`** — o arquivo de plano é rascunho e não versiona. Não planeje o trivial: o passo zero do `grilling` decide se a fase é correção (zero ou uma rodada) ou modelagem (rodadas).
+- **`/clear` entre os modos** (não `/compact`): aprovada a spec, o dono limpa o contexto e a execução roda numa sessão nova: copia a spec aprovada pro `SETUP.md` e lê só ele.
 - **Inbox de achados no início do plan mode:** `gh issue list --label achado --state open` antes de auditar o código. Triagem e fecho de issue seguem `AGENTS.md` §Inbox de achados.
 - **Subagentes = `Task`.** A revisão de fecho de contexto fresco (`AGENTS.md` §O loop) roda como subagente via `Task`, com só os docs vivos + o diff; etapa marcada `delegar a subagente` na spec também.
 - **Fecho da fase pela CLI `gh`.** A sequência inteira — critérios, pausa pro dono, PR, merge, limpeza — está em `AGENTS.md` §Git, e o `/fechar-fase` a executa na ordem. O dono não toca no GitHub.
