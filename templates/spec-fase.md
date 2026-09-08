@@ -2,7 +2,7 @@
 
 > Modelo de uma spec **redigida no plan mode** em `docs/SETUP.md`.
 >
-> Mantenha enxuto: a spec diz **o que** e **por quê**; o code mode decide o **como** aterrado no código.
+> Mantenha enxuto: a spec diz **o que** e **por quê**; o code mode decide o **como** aterrado no código. **Teto orientativo: 4 KB.** Passos e etapas de uma linha; o porquê é ponteiro (ADR, `R-NNN`, termo do `CONTEXT.md`), não argumento; as perguntas do grilling (`Q1…Qn`) não entram — só as decisões.
 
 ---
 
@@ -38,6 +38,8 @@ Uma a três linhas: o que esta fase entrega e por quê.
 2. **Etapa 2 — ...** · commit: `feat: ...` · delegar a subagente: `<modelo> · <effort>`
 
 ## Critério de pronto
+
+> Verificável por execução. Teste novo tem que **falhar no código antigo** (prove). Critério com número de produção envelhece: escreva a **estrutura** esperada e reconte o número no fecho.
 
 - ...
 - docs vivos atualizados (CHANGELOG, ROADMAP; DECISOES/DEBITO se aplicável)
