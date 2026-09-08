@@ -42,6 +42,7 @@ has_flag() {
   printf '%s' "$1" | grep -Eq -- "$2"
 }
 
+REPO_DIR=""
 DESTRUTIVA="operação destrutiva: peça confirmação ao dono (AGENTS.md §Quando pedir confirmação)."
 
 # Comandos compostos (&&, ;, |, ||) são inspecionados cláusula a cláusula, pra
@@ -71,10 +72,26 @@ while IFS= read -r seg; do
     block "git branch -D." "a limpeza de branch do fecho é \`gh pr merge --rebase --delete-branch\`, que apaga remota e local; para descartar uma branch não mergeada, peça ao dono."
   fi
 
-  # git commit quando o branch atual é main
+  # Um `cd <dir>` numa cláusula anterior muda o repo-alvo das cláusulas seguintes.
+  if printf '%s' "$seg" | grep -Eq '^cd[[:space:]]+[^[:space:]]+'; then
+    REPO_DIR="$(printf '%s' "$seg" | sed -E 's/^cd[[:space:]]+//; s/[[:space:]].*$//; s/^"//; s/"$//')"
+    REPO_DIR="${REPO_DIR/#\~/$HOME}"
+  fi
+
+  # git commit quando o branch atual é main — no repo em que o commit vai rodar:
+  # `git -C <dir>` da própria cláusula, senão o `cd` anterior, senão o projeto da sessão.
+  # (Operar um segundo repo a partir da sessão dava falso positivo — F-261.)
   if has_subcmd "$seg" "commit"; then
-    if [ -n "$CLAUDE_PROJECT_DIR" ]; then
-      BRANCH="$(git -C "$CLAUDE_PROJECT_DIR" branch --show-current 2>/dev/null)"
+    ALVO=""
+    if printf '%s' "$seg" | grep -Eq -- '(^|[[:space:]])-C[[:space:]]+[^[:space:]]+'; then
+      ALVO="$(printf '%s' "$seg" | sed -E 's/.*(^|[[:space:]])-C[[:space:]]+([^[:space:]]+).*/\2/')"
+    elif [ -n "$REPO_DIR" ]; then
+      ALVO="$REPO_DIR"
+    elif [ -n "$CLAUDE_PROJECT_DIR" ]; then
+      ALVO="$CLAUDE_PROJECT_DIR"
+    fi
+    if [ -n "$ALVO" ]; then
+      BRANCH="$(git -C "$ALVO" branch --show-current 2>/dev/null)"
     else
       BRANCH="$(git branch --show-current 2>/dev/null)"
     fi

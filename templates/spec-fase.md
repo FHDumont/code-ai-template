@@ -1,6 +1,6 @@
 # Spec de fase — formato
 
-> Modelo de uma spec **redigida no plan mode** em `docs/SETUP.md`.
+> Modelo de uma spec **redigida no plan mode** e que vive em `docs/SETUP.md` (no Claude Code ela nasce no arquivo de plano e a execução a copia pra cá — `CLAUDE.md`).
 >
 > Mantenha enxuto: a spec diz **o que** e **por quê**; o code mode decide o **como** aterrado no código. **Teto orientativo: 4 KB.** Passos e etapas de uma linha; o porquê é ponteiro (ADR, `R-NNN`, termo do `CONTEXT.md`), não argumento; as perguntas do grilling (`Q1…Qn`) não entram — só as decisões.
 
