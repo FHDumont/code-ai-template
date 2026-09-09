@@ -58,7 +58,31 @@ tem_token() {
 # entre aspas é barrado como se fosse o comando. Efeito colateral aceito: um
 # `bash -c 'git add -A'` escapa. O hook é guardrail contra esquecimento, não
 # contra quem quer burlar.
-CLAUSULAS="$(printf '%s' "$COMMAND" | sed -E "s/'[^']*'/''/g; s/\"[^\"]*\"/\"\"/g")"
+# O corpo de um heredoc é DADO, não comando: `cat > x <<EOF` com uma linha
+# `git add -A` dentro escreve texto, não roda git. Como a quebra de linha também
+# separa cláusula (num script multilinha há um comando por linha, e esse a gente
+# quer inspecionar), o corpo do heredoc sai antes de partir. \047 é a aspa simples,
+# que não pode aparecer literal dentro do programa awk.
+CLAUSULAS="$(printf '%s' "$COMMAND" | awk '
+  marca != "" {
+    linha = $0
+    sub(/^[ \t]+/, "", linha)
+    sub(/[ \t]+$/, "", linha)
+    if (linha == marca) { marca = "" }
+    next
+  }
+  {
+    print
+    if (match($0, /<<-?[ \t]*["\047]?[A-Za-z_][A-Za-z0-9_]*["\047]?/)) {
+      m = substr($0, RSTART, RLENGTH)
+      gsub(/^<<-?[ \t]*/, "", m)
+      gsub(/["\047]/, "", m)
+      marca = m
+    }
+  }
+')"
+
+CLAUSULAS="$(printf '%s' "$CLAUSULAS" | sed -E "s/'[^']*'/''/g; s/\"[^\"]*\"/\"\"/g")"
 
 while IFS= read -r seg; do
   seg="$(printf '%s' "$seg" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"

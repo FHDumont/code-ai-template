@@ -41,6 +41,13 @@ espera 'cd web && git add src/foo.ts' 0 'composto sem comando barrado passa'
 # separador dentro de aspas não abre cláusula nova
 espera 'grep -rn "git add -A" docs/' 0 'grep pelo literal entre aspas passa'
 
+# corpo de heredoc é dado, não comando
+espera 'cat > /tmp/x.md <<EOF
+git add -A
+EOF' 0 'git add -A dentro do corpo de heredoc passa'
+espera 'echo oi
+git add -A' 2 'script multilinha de verdade continua barrado'
+
 # exemplos desligados — ficam inertes até serem descomentados no hook
 espera 'pnpm format' 0 'exemplo (1) formatador está comentado'
 espera './scripts/lab.sh up' 0 'exemplo (2) ambiente local está comentado'
