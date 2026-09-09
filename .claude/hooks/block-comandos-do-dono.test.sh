@@ -47,6 +47,11 @@ git add -A
 EOF' 0 'git add -A dentro do corpo de heredoc passa'
 espera 'echo oi
 git add -A' 2 'script multilinha de verdade continua barrado'
+espera 'grep foo <<<"bar"
+git add -A' 2 'here-string não abre heredoc'
+espera 'cat > /tmp/x <<EOF
+texto
+git add -A' 2 'marca que nunca fecha não engole o resto'
 
 # exemplos desligados — ficam inertes até serem descomentados no hook
 espera 'pnpm format' 0 'exemplo (1) formatador está comentado'
