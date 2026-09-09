@@ -1,6 +1,6 @@
 ---
 name: varredura
-description: Varre o código e devolve só coordenadas — arquivo:linha e símbolo, em bullets, sem prosa. Use no passo 4 do plan mode (auditar o código real) e sempre que a pergunta for "onde isto está / quantos são / quais os pontos", não "o que fazer a respeito". Não use pra raciocínio, debug, revisão de fecho ou edição.
+description: Varre o código e devolve só coordenadas — arquivo:linha e símbolo, em bullets, sem prosa. Use no passo 3 do plan mode (auditar o código real) e sempre que a pergunta for "onde isto está / quantos são / quais os pontos", não "o que fazer a respeito". Não use pra raciocínio, debug, revisão de fecho ou edição.
 tools: Read, Grep, Glob, Bash
 model: haiku
 ---
