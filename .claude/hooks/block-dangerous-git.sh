@@ -33,8 +33,12 @@ block() {
 
 # Verifica se $1 contém, como token isolado (delimitado por espaço/início/fim),
 # um subcomando git ($2, ex.: "push", "reset").
+# Verifica se a cláusula **começa** com git + subcomando ($2, ex.: "push", "reset"),
+# tolerando as opções globais que mudam o alvo sem mudar o comando (`git -C <dir>`,
+# `git -c <k=v>`) — o bloco do commit abaixo já lê o `-C`, então ele precisa casar aqui.
+# Âncora no início: um `echo` que só cita o literal não casa (D-001).
 has_subcmd() {
-  printf '%s' "$1" | grep -Eq "git[[:space:]]+$2([[:space:]]|\$)"
+  printf '%s' "$1" | grep -Eq "^git([[:space:]]+-[Cc][[:space:]]+[^[:space:]]+)*[[:space:]]+$2([[:space:]]|\$)"
 }
 
 # Verifica se $1 contém a flag regex $2 (já com âncoras de fronteira embutidas).
