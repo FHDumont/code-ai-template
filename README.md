@@ -38,8 +38,10 @@ CONTEXT.md                 linguagem ubíqua: 1 termo por conceito (preencha; cr
 
 .claude/                   mecânica executável do loop (Claude Code)
 ├─ skills/                 rituais: planejar-fase, fechar-fase, verificar-referencia, grilling
+├─ agents/                 varredura.md — varre o código em modelo leve e devolve só arquivo:linha
 ├─ hooks/                  block-dangerous-git.sh — git destrutivo e commit no main viram erro
-└─ settings.json           registra o hook como PreToolUse/Bash
+│                          block-comandos-do-dono.sh — git add cego (+ exemplos comentados)
+└─ settings.json           registra os hooks como PreToolUse/Bash
 
 docs/                      ← só arquivos VIVOS (estado atual)
 ├─ ROADMAP.md              fases futuras + a atual; 1 linha por fase
