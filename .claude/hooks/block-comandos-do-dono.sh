@@ -61,23 +61,40 @@ tem_token() {
 # O corpo de um heredoc é DADO, não comando: `cat > x <<EOF` com uma linha
 # `git add -A` dentro escreve texto, não roda git. Como a quebra de linha também
 # separa cláusula (num script multilinha há um comando por linha, e esse a gente
-# quer inspecionar), o corpo do heredoc sai antes de partir. \047 é a aspa simples,
-# que não pode aparecer literal dentro do programa awk.
+# quer inspecionar), o corpo do heredoc sai antes de partir.
+#
+# Duas guardas contra engolir comando de verdade (achado numa revisão de fecho):
+# só conta como abertura o que **fecha** — marca sem linha de fechamento não
+# descarta nada —, e `<<<` (here-string), `#` (comentário) e o `<<` aritmético não
+# abrem heredoc. \047 é a aspa simples, que não pode aparecer literal dentro do awk.
 CLAUSULAS="$(printf '%s' "$COMMAND" | awk '
-  marca != "" {
-    linha = $0
-    sub(/^[ \t]+/, "", linha)
-    sub(/[ \t]+$/, "", linha)
-    if (linha == marca) { marca = "" }
-    next
-  }
-  {
-    print
-    if (match($0, /<<-?[ \t]*["\047]?[A-Za-z_][A-Za-z0-9_]*["\047]?/)) {
-      m = substr($0, RSTART, RLENGTH)
-      gsub(/^<<-?[ \t]*/, "", m)
-      gsub(/["\047]/, "", m)
-      marca = m
+  { linha[NR] = $0 }
+  END {
+    i = 1
+    while (i <= NR) {
+      l = linha[i]
+      print l
+      marca = ""
+      sem_herestring = l
+      gsub(/<<</, "\001", sem_herestring)
+      if (sem_herestring !~ /^[ \t]*#/ &&
+          match(sem_herestring, /<<-?[ \t]*("[^"]+"|\047[^\047]+\047|[A-Za-z_][A-Za-z0-9_.-]*)/)) {
+        m = substr(sem_herestring, RSTART, RLENGTH)
+        gsub(/^<<-?[ \t]*/, "", m)
+        gsub(/["\047]/, "", m)
+        marca = m
+      }
+      if (marca != "") {
+        fecha = 0
+        for (j = i + 1; j <= NR; j++) {
+          t = linha[j]
+          sub(/^[ \t]+/, "", t)
+          sub(/[ \t]+$/, "", t)
+          if (t == marca) { fecha = j; break }
+        }
+        if (fecha > 0) { i = fecha + 1; continue }
+      }
+      i++
     }
   }
 ')"
