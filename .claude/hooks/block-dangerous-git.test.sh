@@ -43,6 +43,24 @@ espera 'git -c core.editor=true push --force' 2 'push --force com -c é barrado'
 espera 'cd foo && git push --force origin main' 2 'push --force depois de && é barrado'
 espera 'git status; git clean -fd' 2 'clean -fd depois de ; é barrado'
 
+# separador dentro de aspas não abre cláusula, e corpo de heredoc é dado, não comando
+# (a mesma classe que o block-comandos-do-dono.sh fechou; aqui ela barrava o arquivo
+# que escreve estes próprios casos)
+espera "printf '%s' 'a; git push --force' > /tmp/t" 0 'literal citado não abre cláusula'
+espera 'cat > /tmp/x.sh <<EOF
+git push --force
+EOF' 0 'corpo de heredoc é dado'
+espera 'cat > /tmp/x.sh <<EOF
+texto
+EOF
+git push --force' 2 'comando depois do heredoc fechado é barrado'
+espera 'cat > /tmp/x.sh <<EOF
+git push --force' 2 'heredoc sem fechamento não engole o comando'
+espera 'echo oi
+git reset --hard' 2 'script multilinha de verdade é barrado'
+espera 'grep foo <<<"bar"
+git push --force' 2 'here-string não abre heredoc'
+
 # o legítimo passa
 espera 'git status' 0 'status passa'
 espera 'git push origin main' 0 'push normal passa'
