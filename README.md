@@ -23,7 +23,7 @@ Doc vivo responde **onde estamos / pra onde vamos / o que está aberto**, no men
 
 Resumir só é seguro com **ponteiro**: cada linha resumida referencia onde está o detalhe. Resumo sem ponteiro é perda; resumo com ponteiro é compressão.
 
-O "como/por quê" de uma fase tem quatro destinos por tipo: **decisão de arquitetura** → ADR (só o que passa no teste "ADR ou regra?" do `AGENTS.md`); **regra de comportamento** → `R-NNN` em `docs/reference/`; **narrativa de implementação** (desvios, soluções não-óbvias) → bloco de notas anexado à fase no SETUP-HISTORICO; **o diff literal** → git. As regras mecânicas de migração (quando mover o quê pra onde) estão em `AGENTS.md`.
+O "como/por quê" de uma fase tem quatro destinos por tipo: **decisão de arquitetura** → ADR (só o que passa no teste "ADR ou regra?" do `AGENTS.md`); **regra de comportamento** → `R-NNN` em `docs/reference/`; **narrativa de implementação** (desvios, soluções não-óbvias) → bloco "Notas de implementação" no arquivo da fase em `docs/history/fases/`; **o diff literal** → git. As regras mecânicas de migração (quando mover o quê pra onde) estão em `AGENTS.md`.
 
 ---
 
@@ -39,6 +39,7 @@ CONTEXT.md                 linguagem ubíqua: 1 termo por conceito (preencha; cr
 .claude/                   mecânica executável do loop (Claude Code)
 ├─ skills/                 rituais: planejar-fase, fechar-fase, verificar-referencia, grilling
 ├─ agents/                 varredura.md — varre o código em modelo leve e devolve só arquivo:linha
+│                          revisor-fecho.md — a revisão de fecho de contexto fresco, com o checklist da casa
 ├─ hooks/                  block-dangerous-git.sh — git destrutivo e commit no main viram erro (+ .test.sh)
 │                          block-comandos-do-dono.sh — git add cego (+ exemplos comentados)
 └─ settings.json           registra os hooks como PreToolUse/Bash

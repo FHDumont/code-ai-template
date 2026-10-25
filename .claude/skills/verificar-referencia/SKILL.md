@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 O método deste repo bebe de fontes externas. Elas continuam evoluindo depois que copiamos delas — esta é a passada que fecha o loop. Entrada e saída são fixas: lê `docs/reference/referencias.md`, escreve issues `achado` e o SHA novo. Nada de mudança de método aqui; a triagem é do plan mode.
 
-Rode uma entrada de cada vez. Para cada uma em `docs/reference/referencias.md`:
+Rode uma entrada de cada vez. Para cada **repo vigiado** em `docs/reference/referencias.md` — a seção **Fontes avulsas** fica de fora: são post e palestra, sem SHA pra avançar e sem novidade pra puxar:
 
 1. **Atualize o clone.** `git -C <clone local> pull`. Sem clone na máquina? Diga ao dono onde clonar e siga pra próxima entrada.
 2. **Levante o que entrou** desde o **SHA revisado** da entrada: `git -C <clone> log --oneline <sha>..HEAD` e `git -C <clone> diff --stat <sha>..HEAD`. Se a fonte tem CHANGELOG, `git -C <clone> diff <sha>..HEAD -- CHANGELOG.md` costuma ser o resumo mais barato. Zero commits → registre "sem novidades" e vá pra próxima.
