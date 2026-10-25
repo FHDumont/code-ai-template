@@ -1,8 +1,8 @@
 # AGENTS.md
 
-Instruções para o agente de código deste projeto. **Núcleo agnóstico de ferramenta** — vale em qualquer stack e qualquer agente. Use como está.
+Instruções para o agente de código deste projeto. **Núcleo agnóstico de ferramenta e fonte única de toda regra de método** — vale em qualquer stack e qualquer agente. Use como está. Regra agnóstica nova entra **aqui**, nunca só num flavor; flavor duplica significado só em material on-invocation (runbook de skill), com nota de sync.
 
-- Mecânica por ferramenta: `CLAUDE.md` (Claude Code), `.cursor/rules/metodo.mdc` (Cursor).
+- Flavors (só mecânica da própria ferramenta + ponteiros): Claude Code → `CLAUDE.md` · Cursor → `.cursor/rules/metodo.mdc`.
 - Convenções de código/UI **deste** projeto: `CONVENCOES.md`. Linguagem ubíqua do domínio: `CONTEXT.md`.
 - Projeto de LLM/agentes: acople o add-on opcional e referencie aqui (ex.: `PERFIL-LLM.md`). Instruções no README.
 
@@ -23,7 +23,7 @@ Como o planejador **tem o repo**, a spec nasce confirmada contra o código: nome
 - **Uma fase de cada vez.** `docs/SETUP.md` tem **uma** spec, e as fases entram na ordem do ROADMAP. Implemente, atualize os vivos, **pare**, resuma ao dono e peça aprovação pra próxima.
 - **Fique no modo até a fase fechar.** Se, em code mode, a conversa puxa pra fora do escopo da spec atual (nova ideia, decisão de arquitetura, refatoração não pedida), **pare e pergunte ao dono**: seguir no code, dentro do escopo, ou voltar pro plan pra tratar aquilo como fase própria? É o mesmo princípio de "sem refatoração de carona", aplicado à troca de modo.
 - **Revisão de fecho com contexto fresco.** Ao fechar a fase em code mode — depois de rodar os critérios, antes do commit — dispare um **subagente sem o contexto da sessão**, que recebe só os *docs vivos + o diff* e confere se o entregue bate com a intenção da spec. Limpo → passada única de docs + commit. Divergiu → corrija antes. Fase que não toca código pode pular.
-- **O plano durável é a spec.** A spec no `docs/SETUP.md` é o plano canônico (o porquê arquitetural distila em ADR; a regra de comportamento, em `R-NNN`; a narrativa de implementação, ao fechar, no arquivo da fase em `docs/history/fases/`). O arquivo de plano nativo da ferramenta (Claude Code `~/.claude/plans`, Cursor) é **rascunho efêmero — fica fora do git**. **A spec é enxuta** (`templates/spec-fase.md`): passos e etapas de uma linha, porquê por ponteiro (ADR, `R-NNN`, termo do `CONTEXT.md`) sem reproduzir o argumento, e a árvore do grilling (`Q1…Qn`) **não entra** — só as decisões que ela produziu. Teto orientativo de 4 KB.
+- **O plano durável é a spec.** A spec no `docs/SETUP.md` é o plano canônico (o porquê arquitetural distila em ADR; a regra de comportamento, em `R-NNN`; a narrativa de implementação, ao fechar, no arquivo da fase em `docs/history/fases/`). O arquivo de plano nativo da ferramenta (Claude Code `~/.claude/plans`, Cursor) é **rascunho efêmero — fica fora do git**; quem copia a spec pra `docs/SETUP.md` é a **própria sessão de plan mode**, logo depois da aprovação e sem commitar, porque a execução pode ser de outro agente, que não lê esse arquivo. O commit da spec é da execução, junto com o primeiro código. **A spec é enxuta** (`templates/spec-fase.md`): passos e etapas de uma linha, porquê por ponteiro (ADR, `R-NNN`, termo do `CONTEXT.md`) sem reproduzir o argumento, e a árvore do grilling (`Q1…Qn`) **não entra** — só as decisões que ela produziu. Teto orientativo de 4 KB.
 - **Revisão que divergiu roda de novo sobre a correção.** A correção abre defeito novo com frequência, e só a segunda passada de contexto fresco vê.
 - **Tela nova se mostra durante a execução**, não no fecho: screenshot da etapa pro dono enquanto se faz.
 
@@ -107,7 +107,13 @@ A regra mais importante. O detalhe de "como/por quê" tem quatro destinos, por t
 2. Mova a spec inteira de `SETUP.md` → `docs/history/fases/F-xxx.md` (arquivo novo) e acrescente **uma linha** no índice `history/SETUP-HISTORICO.md`, anexando no arquivo da fase um bloco **"Notas de implementação"** com o que vale reler depois (desvios, soluções não-óbvias, becos evitados) — memória, não log passo-a-passo, que o git já tem. Escreva nota só quando houver algo que mereça.
 3. Colapse a fase em **uma linha** no `CHANGELOG.md`: `F-xxx — o que entrou — AAAA-MM-DD`.
 4. **Remova** a fase do `ROADMAP.md` (o CHANGELOG é que guarda o entregue).
-5. Ponha a próxima spec em `SETUP.md` (agora vazio).
+5. **`SETUP.md` fica vazio.** A spec da próxima fase nasce em plan mode e é **commitada pela execução dela**, junto com o primeiro código — nunca pelo fecho da fase anterior.
+
+A atualização dos docs vivos do fecho (itens 2–4) pode entrar no último commit substantivo da fase **ou** num commit `docs: fecho da F-xxx` próprio — **com a condição de esse commit não carregar código**. A nota de implementação só existe depois da revisão de fecho com contexto fresco rodar, e exigir tudo num commit só transformava `--amend` em obrigatório no ponto mais arriscado do fluxo. Código junto continua proibido: é o commit que a revisão acabou de examinar.
+
+**Problema surgido na fase se resolve na fase.** Sobra de escopo, defeito achado no caminho, ajuste que a própria fase criou — vira **etapa da fase corrente**, não linha de `ROADMAP`. Só vira item vivo (`ROADMAP`, `DEBITO-TECNICO`, issue) o que for **complexo e estrutural**: muda contrato entre pacotes, muda schema, exige decisão do dono, ou não cabe no fecho sem inchar a fase. Uma linha de roadmap é barata de escrever e cara de carregar — ela vira contexto em toda sessão de plan mode futura.
+
+**Critério de adjacência — o que cabe na fase sem virar item.** Cabe quando os quatro valem: **mesmo arquivo ou mesmo caminho de código** que a fase já toca; **cabe numa linha** (ou poucas); **não muda contrato**; **não precisa de decisão do dono**. Falhou um, é candidato a item vivo — e aí a régua acima decide se é estrutural o bastante. Em dúvida, pergunte ao dono; escopo incerto é pergunta, não suposição.
 
 **ADR ou regra? — o teste.** Só é ADR o que passa em pelo menos um: muda **contrato** entre pacotes ou API pública; muda **schema** de forma estrutural; adiciona ou troca **dependência, lib ou padrão transversal** (auth, cache, RLS, jobs, CI); custa **mais de uma fase** pra reverter; ou é decisão de **método** ou de **escopo do produto**. O resto — como a linha casa, como a fatura soma, o que a tela mostra, qual perna é a manchete, como o import deduplica — é **regra de comportamento**: `R-NNN` em `docs/reference/<assunto>.md`, viva e editável, no presente, com exemplo, âncora `arquivo › símbolo`, o rejeitado e a origem. Na dúvida é regra: ADR é a exceção. A recusa segue a mesma régua — recusa arquitetural é ADR `rejeitado`; recusa de regra mora no `**Rejeitado:**` da regra; escolha de escopo mora na spec. O projeto de origem deste método chegou a 341 ADRs em 248 fases com 5 `superseded` — a maioria era regra, e a verdade atual de cada uma estava espalhada por uma cadeia de emendas.
 
@@ -117,7 +123,7 @@ A regra mais importante. O detalhe de "como/por quê" tem quatro destinos, por t
 
 1. Escreva o ADR completo em `docs/adr/ADR-NNN.md` (use `docs/adr/TEMPLATE.md`).
 2. Adicione **uma linha** ao índice `docs/DECISOES.md`: `ADR-NNN — título — status`.
-3. ADR aceito é imutável (o bloco `## Emendas` do rodapé é a única parte mutável). Pra revogar, crie um novo ADR e mude o **status** do antigo pra `superseded por ADR-MMM` no índice — o antigo permanece visível, sempre.
+3. ADR é imutável depois de aceito **e integrado** (o bloco `## Emendas` do rodapé é a única parte mutável). **ADR nascido na fase em curso é rascunho até o merge:** enquanto a branch não integrou, corrija o corpo **no lugar**, nos commits da própria fase — é onde a revisão de fecho acha a redação da decisão que acabou de ser tomada, e abrir emenda para isso infla o índice. Pra revogar, crie um novo ADR e mude o **status** do antigo pra `superseded por ADR-MMM` no índice — o antigo permanece visível, sempre.
 4. **Decidir não fazer também é decisão:** proposta avaliada e recusada vira ADR com status `rejeitado` — mesmo formato, com o porquê da recusa nas Consequências. É o que impede a ideia de voltar à mesa a cada seis meses, e o ponteiro pra onde o "não" foi argumentado.
 
 **Ao resolver um débito:**
@@ -131,7 +137,9 @@ A regra mais importante. O detalhe de "como/por quê" tem quatro destinos, por t
 
 **Teto por item, e ele é um teto — não uma licença.** Item de `DEBITO-TECNICO`: **no máximo 3 frases** — o defeito com `arquivo:linha`, a consequência prática, e `Correção:` nomeada. Linha de `ROADMAP`: **uma**, com ID + objetivo + o que a fase fecha. Todo *porquê histórico* — que fase criou, o que foi tentado, o que o dono recusou, como a fase foi fatiada — mora no ADR ou na arquivo da fase em `docs/history/fases/`, **com ponteiro**. O objetivo é **menos contexto por leitura**. Ao cortar, o `Correção:` é a única parte que fica sempre — é a única acionável.
 
-**Todo débito fica registrado.** Pra depois → item em `DEBITO-TECNICO` (ID + até 3 frases + severidade). Resolvido → migra pro histórico. Aceito como limitação → registra como tal. Não há quarta saída.
+**Débito nunca é descartado em silêncio, e "aceito como limitação" não é estado do doc vivo.** Pra depois, com correção pendente → item em `DEBITO-TECNICO` (ID + até 3 frases + severidade + `Correção:` acionável). Resolvido, ou aceito sem correção pendente → migra pra `DEBITO-RESOLVIDO` com nota de aceite (fase de origem + decisão do dono). Item sem `Correção:` acionável não é débito — é informação, e contradiz o objetivo do arquivo. Some sem registro → nunca.
+
+**"NÃO entra" da spec não vira débito automaticamente.** Vira linha em `DEBITO-TECNICO` só quando for **defeito conhecido**, **atalho que vai doer**, ou **compromisso assumido e não cumprido**. Escolha de escopo ("não fazemos X nesta fase") mora na spec — que migra pro arquivo da fase em `docs/history/fases/` — e, se for arquitetural, no ADR. Copiar a seção "NÃO entra" pro débito conta a mesma coisa duas vezes e faz a lista crescer sem sinal de urgência.
 
 ## Quando pedir confirmação
 
@@ -144,7 +152,7 @@ Confirme quando há **risco real ou dúvida real** — não a cada passo. Dentro
 - Instalar dependência nova não prevista.
 - Mudar arquitetura, trocar biblioteca, ou alterar schema do banco.
 - Tocar em segredos, credenciais ou `.env`.
-- Ao final de cada fase do `SETUP.md` (marco explícito).
+- Ao final de cada fase do `SETUP.md` (marco explícito): a fase **seguinte** só abre com aprovação do dono.
 
 **Pedir confirmação quando houver DÚVIDA real:**
 
@@ -167,9 +175,9 @@ Em dúvida entre pausar ou seguir num passo **reversível e de baixo risco**, **
 - **Nunca `git add -A`, `git add --all` nem `git add .`** — sempre por caminho explícito, com o `git status` conferido antes. O working tree é compartilhado com subagentes e carrega arquivo alheio à etapa. Guardrail: `.claude/hooks/block-comandos-do-dono.sh`.
 - **Uma fase = uma branch = um PR.** A spec pode ser entregue em **1+ etapas**, e **cada etapa é um commit** na branch da fase — commite a etapa que terminou antes de abrir a próxima. Nome da branch: `fase/F-xxx-slug` (trabalho avulso fora de fase: `fix/slug`, `chore/slug`).
 - **Commits: Conventional Commits.** Prefixos `feat: fix: docs: test: refactor: chore:`; mensagem no imperativo, escopo claro, uma etapa por commit, sem refatoração não pedida junto. **Nunca** adicione trailer de atribuição de IA (`Co-Authored-By` ou similar).
-- **O pedido de fecho é a validação — o fecho é 100% do agente e corre até o fim sem pausa.** "Fechar fase" — digitado ou via ritual da ferramenta — significa que o dono testou e libera a sequência inteira. **Falha ainda para:** critério que falha ou revisão de fecho que diverge interrompem o fecho e voltam pro código — falha reportada, não pedido de confirmação. Liberado, o fecho corre inteiro: abre o PR (corpo curto: o que/por quê + critérios, referência à `F-xxx`) via `gh`/CLI do forge → confirma checks verdes → **integra por `gh pr merge --rebase` → apaga a branch (remota E local) → sincroniza o `main` local** (`git switch main && git pull`). O dono não toca no GitHub. Ao terminar, `git branch` mostra só `main`, atualizado com o `origin/main`.
+- **O pedido de fecho é a validação — o fecho é 100% do agente e corre até o fim sem pausa.** "Fechar fase" — digitado ou via ritual da ferramenta — significa que o dono testou e libera a sequência inteira. **Falha ainda para:** critério que falha ou revisão de fecho que diverge interrompem o fecho e voltam pro código — falha reportada, não pedido de confirmação. Liberado, o fecho corre inteiro: abre o PR (corpo curto: o que/por quê + critérios, referência à `F-xxx`) via `gh`/CLI do forge → confirma checks verdes → **integra por `gh pr merge --rebase --delete-branch`** (apaga remota e local de uma vez — o hook bloqueia `git branch -D`) **→ sincroniza o `main` local** (`git switch main && git pull`). O dono não toca no GitHub. Ao terminar, `git branch` mostra só `main`, atualizado com o `origin/main`.
 - **Um CI por fecho.** Checks verdes conferidos **antes** do merge; o build de imagem que dispara no merge é entrega, não gate — o fecho termina no merge.
-- **Histórico linear — sempre `--rebase`.** `gh pr merge --rebase` põe os commits da fase lineares no `main`, preservando 1 commit por etapa. **Nunca** `--merge` (criaria merge commit e ramificaria o gráfico) nem `--squash` (colapsaria as etapas num commit só). O histórico do `main` é uma linha reta.
+- **Histórico linear — sempre `--rebase`.** `gh pr merge --rebase --delete-branch` põe os commits da fase lineares no `main`, preservando 1 commit por etapa. **Nunca** `--merge` (criaria merge commit e ramificaria o gráfico) nem `--squash` (colapsaria as etapas num commit só). O histórico do `main` é uma linha reta.
 - **Reescrita de história só no que ainda é local.** `rebase`/`amend`/`force-push` valem enquanto a branch não foi publicada; branch já em PR é imutável. (Config do repo: `main` protegido exigindo PR + checks verdes, mas permitindo o merge do agente — senão o loop trava.)
 
 ## Em resumo

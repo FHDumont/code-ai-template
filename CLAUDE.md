@@ -1,27 +1,27 @@
 # CLAUDE.md
 
-`AGENTS.md` é a instrução canônica — **leia primeiro**, tudo lá vale aqui. Este arquivo só mapeia a mecânica do loop pros botões do Claude Code.
+`AGENTS.md` é a instrução canônica e a fonte única do método — **leia primeiro**, tudo lá vale aqui. Este arquivo só mapeia a mecânica do loop pros botões do Claude Code.
 
 ## Os rituais são skills
 
-Os três momentos do loop têm skill própria em `.claude/skills/` — **é a forma preferida de acioná-los**, porque a ordem dos passos e as pausas já vêm dentro:
+Os três momentos do loop têm skill própria em `.claude/skills/` — **é a forma preferida de acioná-los**, porque a ordem dos passos já vem dentro:
 
 | Skill | Quando | O que faz |
 | ----- | ------ | --------- |
 | `/planejar-fase` | abrindo o plan mode | inbox de achados → docs vivos quentes → auditoria do código → `grilling` → spec em `docs/SETUP.md` |
-| `/fechar-fase` | fim da fase em code mode | critérios → revisão de contexto fresco → passada de docs → **pausa pro dono** → PR/merge/limpeza |
+| `/fechar-fase` | fim da fase em code mode | critérios → revisão de contexto fresco → passada de docs → PR/merge/limpeza, **sem pausa** — falha ainda para |
 | `/verificar-referencia` | de tempos em tempos | novidades dos repos de `docs/reference/referencias.md` → issues `achado` → SHA avançado |
 
 A quarta, `grilling`, é a primitiva model-invoked por trás do `/planejar-fase` — interroga o dono em rodadas até a fronteira de decisões esvaziar. Chame direto quando quiser estressar um raciocínio fora do ritual.
 
 ## Mecânica no Claude Code
 
-- **Plan mode = a passada de raciocínio.** Nele você audita o código, discute o aberto e **redige a spec** no formato de `templates/spec-fase.md`. `docs/SETUP.md` continua sendo o plano canônico (`AGENTS.md`); a mecânica do Claude Code é que o plan mode **não grava arquivos do repo**, então a spec nasce no arquivo de plano da ferramenta, `ExitPlanMode` (aprovação do plano) = aprovação da spec, e o **primeiro ato do code mode é copiá-la, sem alteração, pro `docs/SETUP.md`** — o arquivo de plano é rascunho e não versiona. Não planeje o trivial: o passo zero do `grilling` decide se a fase é correção (zero ou uma rodada) ou modelagem (rodadas).
-- **`/clear` entre os modos** (não `/compact`): aprovada a spec, o dono limpa o contexto e a execução roda numa sessão nova: copia a spec aprovada pro `SETUP.md` e lê só ele.
+- **Plan mode = a passada de raciocínio.** Nele você audita o código, discute o aberto e **redige a spec** no formato de `templates/spec-fase.md`. `docs/SETUP.md` continua sendo o plano canônico (`AGENTS.md`); a mecânica do Claude Code é que o plan mode **não grava arquivos do repo**, então a spec nasce no arquivo de plano da ferramenta e `ExitPlanMode` (aprovação do plano) = aprovação da spec. **Aprovada, o último ato do plan mode é copiá-la, sem alteração, pro `docs/SETUP.md`** — junto com os demais destinos da triagem (linhas do `ROADMAP.md`, item de `DEBITO-TECNICO.md`), tudo **não commitado**: o commit é da execução. Copiar não é tarefa do code mode porque **a fase pode ser executada por outro agente** (Cursor, Codex…), que não lê o arquivo de plano do Claude Code. O arquivo de plano é rascunho e não versiona. Não planeje o trivial: o passo zero do `grilling` decide se a fase é correção (zero ou uma rodada) ou modelagem (rodadas).
+- **`/clear` entre os modos** (não `/compact`): aprovada a spec e gravada no `docs/SETUP.md` pelo plan mode, o dono limpa o contexto e a execução roda numa sessão nova: lê só o `SETUP.md`. Copiar a spec **não** é do code mode (bullet acima).
 - **Inbox de achados no início do plan mode:** `gh issue list --label achado --state open` antes de auditar o código. Triagem e fecho de issue seguem `AGENTS.md` §Inbox de achados.
-- **Subagentes = `Task`.** A revisão de fecho de contexto fresco (`AGENTS.md` §O loop) roda como subagente via `Task`, com só os docs vivos + o diff; etapa marcada `delegar a subagente` na spec também.
-- **Fecho da fase pela CLI `gh`.** A sequência inteira — critérios, pausa pro dono, PR, merge, limpeza — está em `AGENTS.md` §Git, e o `/fechar-fase` a executa na ordem. O dono não toca no GitHub.
-- **Git destrutivo é bloqueado por hook.** `.claude/hooks/block-dangerous-git.sh`, registrado como PreToolUse/Bash em `.claude/settings.json`, barra `push --force`, `reset --hard`, `clean -f`, `branch -D` e `commit` com o branch atual em `main` — as regras de `AGENTS.md` §Git viradas guardrail duro. A mensagem do bloqueio traz a rota certa; siga por ela ou peça ao dono, sem contornar o hook.
+- **Subagentes = `Task`.** Os definidos em `.claude/agents/`: `varredura` (coordenadas `arquivo:linha`, modelo leve) e `revisor-fecho` (a revisão de fecho de contexto fresco). A revisão de fecho (`AGENTS.md` §O loop) e a etapa marcada `delegar a subagente` na spec rodam via `Task`. O código delegado volta pro working tree da sessão principal e segue o fluxo normal — diff revisado, critérios, commit por etapa. Delegar não é pular revisão.
+- **Fecho da fase pela CLI `gh`.** A sequência inteira — critérios, revisão, docs, PR, merge, limpeza — está em `AGENTS.md` §Git, e o `/fechar-fase` a executa na ordem. O dono não toca no GitHub.
+- **Git destrutivo é bloqueado por hook.** `.claude/hooks/block-dangerous-git.sh`, registrado como PreToolUse/Bash em `.claude/settings.json`, barra `push --force`, `reset --hard`, `clean -f`, `branch -D` e `commit` com o branch atual em `main` — as regras de `AGENTS.md` §Git viradas guardrail duro. A mensagem do bloqueio traz a rota certa; **siga por ela ou peça ao dono, sem contornar o hook**. `block-comandos-do-dono.sh` faz o mesmo com os comandos que só o dono roda (`git add` cego, mais os do projeto). Cada hook tem seu `.test.sh` ao lado.
 - **Prompts curtos:** o dono aciona fases com instruções curtas (ex.: "planeja a próxima fase", "executa a fase do SETUP") ou pela skill do ritual. O contexto vem dos docs vivos, não do prompt.
 
 ## Model e effort
