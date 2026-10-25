@@ -31,8 +31,6 @@ block() {
   exit 2
 }
 
-# Verifica se $1 contém, como token isolado (delimitado por espaço/início/fim),
-# um subcomando git ($2, ex.: "push", "reset").
 # Verifica se a cláusula **começa** com git + subcomando ($2, ex.: "push", "reset"),
 # tolerando as opções globais que mudam o alvo sem mudar o comando (`git -C <dir>`,
 # `git -c <k=v>`) — o bloco do commit abaixo já lê o `-C`, então ele precisa casar aqui.
@@ -45,6 +43,52 @@ has_subcmd() {
 has_flag() {
   printf '%s' "$1" | grep -Eq -- "$2"
 }
+
+# Separador dentro de aspas não abre cláusula nova: `grep "git push --force" docs/`
+# cita o literal, não o roda. Mesma régua (e mesmo efeito colateral aceito — um
+# `bash -c 'git push --force'` escapa) do block-comandos-do-dono.sh.
+# O corpo de um heredoc é DADO, não comando: `cat > x <<EOF` com uma linha
+# `git add -A` dentro escreve texto, não roda git. Como a quebra de linha também
+# separa cláusula (num script multilinha há um comando por linha, e esse a gente
+# quer inspecionar), o corpo do heredoc sai antes de partir.
+#
+# Duas guardas contra engolir comando de verdade (achado numa revisão de fecho):
+# só conta como abertura o que **fecha** — marca sem linha de fechamento não
+# descarta nada —, e `<<<` (here-string), `#` (comentário) e o `<<` aritmético não
+# abrem heredoc. \047 é a aspa simples, que não pode aparecer literal dentro do awk.
+CLAUSULAS="$(printf '%s' "$COMMAND" | awk '
+  { linha[NR] = $0 }
+  END {
+    i = 1
+    while (i <= NR) {
+      l = linha[i]
+      print l
+      marca = ""
+      sem_herestring = l
+      gsub(/<<</, "\001", sem_herestring)
+      if (sem_herestring !~ /^[ \t]*#/ &&
+          match(sem_herestring, /<<-?[ \t]*("[^"]+"|\047[^\047]+\047|[A-Za-z_][A-Za-z0-9_.-]*)/)) {
+        m = substr(sem_herestring, RSTART, RLENGTH)
+        gsub(/^<<-?[ \t]*/, "", m)
+        gsub(/["\047]/, "", m)
+        marca = m
+      }
+      if (marca != "") {
+        fecha = 0
+        for (j = i + 1; j <= NR; j++) {
+          t = linha[j]
+          sub(/^[ \t]+/, "", t)
+          sub(/[ \t]+$/, "", t)
+          if (t == marca) { fecha = j; break }
+        }
+        if (fecha > 0) { i = fecha + 1; continue }
+      }
+      i++
+    }
+  }
+')"
+
+CLAUSULAS="$(printf '%s' "$CLAUSULAS" | sed -E "s/'[^']*'/''/g; s/\"[^\"]*\"/\"\"/g")"
 
 REPO_DIR=""
 DESTRUTIVA="operação destrutiva: peça confirmação ao dono (AGENTS.md §Quando pedir confirmação)."
@@ -105,7 +149,7 @@ while IFS= read -r seg; do
     fi
   fi
 done <<EOF
-$(printf '%s' "$COMMAND" | sed -E 's/(&&|\|\||;|\|)/\n/g')
+$(printf '%s' "$CLAUSULAS" | sed -E 's/(&&|\|\||;|\|)/\n/g')
 EOF
 
 exit 0
