@@ -81,6 +81,27 @@ else
   printf '%s\n' "$lista" >&2
 fi
 
+clone2="${TMP}/clone2"
+git clone -q "$bare" "$clone2"
+git -C "$clone2" config user.email "teste@example.com"
+git -C "$clone2" config user.name "Teste"
+git -C "$clone2" fetch -q origin 'fase/F-010-alfa'
+git -C "$clone2" checkout -q -B 'fase/F-010-alfa' 'origin/fase/F-010-alfa'
+(
+  cd "$clone2"
+  bash "${AQUI}/enfileirar.sh" --na F-010 --linha '- **F-022** — no origin — depende de F-010'
+) >/dev/null
+git -C "$clone" fetch -q origin 'fase/F-010-alfa'
+lista="$(cd "$clone" && bash "${AQUI}/fases-ativas.sh")"
+vezes21="$(printf '%s\n' "$lista" | grep -c 'F-021' || true)"
+vezes22="$(printf '%s\n' "$lista" | grep -c 'F-022' || true)"
+if [[ "$vezes21" -eq 1 && "$vezes22" -eq 1 ]]; then
+  teste_ok "linha só no origin entra na fila sem duplicar a local"
+else
+  teste_falha "refs divergentes: F-021=${vezes21} F-022=${vezes22}"
+  printf '%s\n' "$lista" >&2
+fi
+
 mock="${TMP}/bin"
 mkdir -p "$mock"
 cat > "${mock}/gh" <<'EOF'
