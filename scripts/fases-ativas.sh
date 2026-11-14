@@ -50,7 +50,22 @@ fi
 # Nomes com prefixo: o caller tem `local arquivos` e o bash enxerga o local do pai.
 declare -a fase_ids=() fase_modos=() fase_situacoes=() fase_branches=() fase_worktrees=()
 declare -a fase_arquivos=() fase_areas=() fase_bots=() fase_depende=() fase_escopos=()
-declare -a fila=()
+declare -a fila=() fila_roadmap=() fila_fragmento=() fila_issue=()
+declare -A fila_crua=() fila_vista=()
+
+# A mesma linha não entra duas vezes. A ordem de impressão é outra função.
+guardar_fila() {
+  local crua="$1" item="$2" balde="$3"
+  if [[ -n "${fila_crua[$crua]+x}" ]]; then
+    return 0
+  fi
+  fila_crua["$crua"]=1
+  case "$balde" in
+    roadmap) fila_roadmap+=("$item") ;;
+    fragmento) fila_fragmento+=("$item") ;;
+    issue) fila_issue+=("$item") ;;
+  esac
+}
 
 registrar() {
   local id="$1"
@@ -133,7 +148,7 @@ ler_fragmento_fila() {
       fi
       [[ "$secao" == "roadmap-add" ]] || continue
       [[ -z "$linha" || "$linha" =~ ^# || "$linha" =~ ^\<\!-- ]] && continue
-      fila+=("${linha} — na ${origem}, ainda fora do main")
+      guardar_fila "$linha" "${linha} — na ${origem}, ainda fora do main" fragmento
     done <<< "$conteudo"
   done <<< "$lista"
 }
@@ -171,13 +186,15 @@ varrer_refs() {
     curto="$ref"
     curto="${curto#origin/}"
     [[ "$curto" == fase/* ]] || continue
-    if [[ -n "${branch_vista[$curto]+x}" ]]; then
+    if [[ -z "${fila_vista[$curto]+x}" ]]; then
+      fila_vista["$curto"]=1
       ler_fragmento_fila "$ref" "$curto"
+    fi
+    if [[ -n "${branch_vista[$curto]+x}" ]]; then
       continue
     fi
     branch_vista["$curto"]=1
     ler_claim_de_ref "$ref" "$curto"
-    ler_fragmento_fila "$ref" "$curto"
     if ! git ls-tree -r --name-only "$ref" -- docs/fases-ativas 2>/dev/null | grep -q '^docs/fases-ativas/F-'; then
       if ! git merge-base --is-ancestor "$ref" "$base_ref" 2>/dev/null; then
         registrar "$curto" "solitaria" "sem-registro" "$curto" "-" "repo-inteiro" "-" "-" "-" "branch sem docs/fases-ativas; trata como o repo inteiro" || true
@@ -217,10 +234,51 @@ if [[ -f "${ROOT}/docs/ROADMAP.md" && -f "${ROOT}/docs/CHANGELOG.md" ]]; then
       fi
     done < <(integracao_ids_depende "$linha")
     if [[ $bloqueada -eq 1 ]]; then
-      fila+=("${linha} — no ROADMAP; a dependência ainda não está no CHANGELOG")
+      guardar_fila "$linha" "${linha} — no ROADMAP; a dependência ainda não está no CHANGELOG" roadmap
     fi
   done < "${ROOT}/docs/ROADMAP.md"
 fi
+
+# Corpo de issue aberta com "depende de". Fora do GitHub, ou se o gh falhar, a fila segue sem essa fonte.
+ler_issues_fila() {
+  local url json n body linha dep bloqueada
+  url="$(git remote get-url origin 2>/dev/null || true)"
+  if [[ "${FASES_ATIVAS_GH:-}" != 1 && "$url" != *github.com* && "$url" != *github.com:* ]]; then
+    return 0
+  fi
+  command -v gh >/dev/null 2>&1 || return 0
+  command -v jq >/dev/null 2>&1 || return 0
+  if ! json="$(GH_PROMPT_DISABLED=1 gh issue list --state open --limit 100 --json number,body 2>/dev/null)"; then
+    echo "aviso: não li issues abertas; a fila pode estar incompleta" >&2
+    return 0
+  fi
+  [[ -n "$json" && "$json" != "[]" ]] || return 0
+  [[ -f "${ROOT}/docs/CHANGELOG.md" ]] || return 0
+  while IFS= read -r obj; do
+    [[ -n "$obj" ]] || continue
+    n="$(jq -r '.number' <<<"$obj")"
+    body="$(jq -r '.body // ""' <<<"$obj")"
+    while IFS= read -r linha || [[ -n "$linha" ]]; do
+      [[ "$linha" == *"depende de "* ]] || continue
+      bloqueada=0
+      while IFS= read -r dep; do
+        [[ -n "$dep" ]] || continue
+        if ! grep -F -q -- "**${dep}**" "${ROOT}/docs/CHANGELOG.md" && ! grep -E -q "^- ${dep} " "${ROOT}/docs/CHANGELOG.md"; then
+          bloqueada=1
+        fi
+      done < <(integracao_ids_depende "$linha")
+      if [[ $bloqueada -eq 1 ]]; then
+        guardar_fila "$linha" "${linha} — na issue #${n}; a dependência ainda não está no CHANGELOG" issue
+      fi
+    done <<< "$body"
+  done < <(jq -c '.[]' <<<"$json")
+}
+ler_issues_fila
+
+fila=()
+[[ ${#fila_roadmap[@]} -eq 0 ]] || fila+=("${fila_roadmap[@]}")
+[[ ${#fila_fragmento[@]} -eq 0 ]] || fila+=("${fila_fragmento[@]}")
+[[ ${#fila_issue[@]} -eq 0 ]] || fila+=("${fila_issue[@]}")
 
 echo "# fases ativas"
 if [[ ${#fase_ids[@]} -eq 0 ]]; then

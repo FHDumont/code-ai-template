@@ -83,6 +83,37 @@ else
 fi
 
 cat > "$base" <<'EOF'
+# CHANGELOG
+
+- **F-001** — base — 2026-01-01
+EOF
+cat > "$mainf" <<'EOF'
+# CHANGELOG
+
+- **F-001** — editada na main — 2026-01-01
+EOF
+cat > "$fase" <<'EOF'
+# CHANGELOG
+
+- **F-001** — editada na fase — 2026-01-01
+EOF
+if integracao_resolver_ledger "$base" "$mainf" "$fase" F-010 >"${TMP}/out" 2>"${TMP}/err"; then
+  teste_falha "os dois lados reescreverem linha alheia deveria ser conflito não trivial"
+  cat "${TMP}/out" >&2
+else
+  teste_ok "os dois lados reescrevem linha alheia e o resolver para"
+fi
+
+cat > "$fase" <<'EOF'
+# CHANGELOG
+EOF
+if integracao_resolver_ledger "$base" "$mainf" "$fase" F-010 >"${TMP}/out" 2>"${TMP}/err"; then
+  teste_falha "a fase apagar linha alheia que a main reescreveu deveria parar"
+else
+  teste_ok "fase que apaga linha alheia para mesmo se a main reescreveu"
+fi
+
+cat > "$base" <<'EOF'
 # ROADMAP
 
 ## Próximas

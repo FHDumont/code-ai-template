@@ -67,6 +67,43 @@ else
   printf '%s\n' "$lista" >&2
 fi
 
+(
+  cd "$clone"
+  bash "${AQUI}/enfileirar.sh" --na F-010 --linha '- **F-021** — depois — depende de F-010' --sem-push
+  git push origin 'fase/F-010-alfa' >/dev/null 2>&1
+)
+lista="$(cd "$clone" && bash "${AQUI}/fases-ativas.sh")"
+vezes="$(printf '%s\n' "$lista" | grep -c 'F-021' || true)"
+if [[ "$vezes" -eq 1 ]]; then
+  teste_ok "fila do fragmento aparece uma vez com a branch no remoto"
+else
+  teste_falha "fila do fragmento saiu ${vezes} vezes"
+  printf '%s\n' "$lista" >&2
+fi
+
+mock="${TMP}/bin"
+mkdir -p "$mock"
+cat > "${mock}/gh" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' '[{"number":7,"body":"- **F-030** — exportar — depende de F-099\n- **F-031** — pronta — depende de F-001"}]'
+EOF
+chmod +x "${mock}/gh"
+lista="$(cd "$clone" && PATH="${mock}:${PATH}" FASES_ATIVAS_GH=1 bash "${AQUI}/fases-ativas.sh")"
+if [[ "$lista" == *'issue #7'* && "$lista" == *'F-030'* && "$lista" != *'F-031'* ]]; then
+  teste_ok "fila lê issue aberta e ignora dependência já no changelog"
+else
+  teste_falha "issue não entrou na fila como devia"
+  printf '%s\n' "$lista" >&2
+fi
+pos_road="$(printf '%s\n' "$lista" | grep -n 'F-020' | head -n 1 | cut -d: -f1 || true)"
+pos_frag="$(printf '%s\n' "$lista" | grep -n 'F-021' | head -n 1 | cut -d: -f1 || true)"
+pos_issue="$(printf '%s\n' "$lista" | grep -n 'issue #7' | head -n 1 | cut -d: -f1 || true)"
+if [[ -n "$pos_road" && -n "$pos_frag" && -n "$pos_issue" && "$pos_road" -lt "$pos_frag" && "$pos_frag" -lt "$pos_issue" ]]; then
+  teste_ok "fila sai roadmap, fragmento, issue"
+else
+  teste_falha "ordem da fila: roadmap=${pos_road} fragmento=${pos_frag} issue=${pos_issue}"
+fi
+
 if [[ "$teste_falhou" -ne 0 ]]; then
   echo "fases-ativas.test.sh falhou" >&2
   exit 1

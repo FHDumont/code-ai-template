@@ -66,8 +66,10 @@ integracao_resolver_ledger() {
     na_main["$linha"]=1
   done < "$main_file"
 
+  # A linha original sumiu da fase. Se a main ainda a tem, ou se a main
+  # também a reescreveu, a fase mexeu em linha que não é dela.
   for linha in "${!na_base[@]}"; do
-    if [[ -z "${na_phase[$linha]+x}" && -n "${na_main[$linha]+x}" ]]; then
+    if [[ -z "${na_phase[$linha]+x}" ]]; then
       if ! integracao_linha_e_da_fase "$linha" "$phase_id"; then
         echo "conflito não trivial: a fase tirou ou reescreveu linha que não é dela: ${linha}" >&2
         return 1

@@ -60,7 +60,7 @@ Depois do rebase a validação é `scripts/validar.sh`, salvo `INTEGRACAO_VALIDA
 
 O script pode `push --force-with-lease` somente em branch `fase/*`, depois do rebase. O hook continua barrando force na mão e aponta este script.
 
-**Exemplo:** duas solitárias acrescentam linhas diferentes no fim do `CHANGELOG`. A segunda integração fica com as duas. As duas editam o mesmo `.ts` → exit 4, `main` intacto.
+**Exemplo:** duas solitárias acrescentam linhas diferentes no fim do `CHANGELOG`. A segunda integração fica com as duas. As duas reescrevem a mesma linha que não é delas, ou uma apaga essa linha enquanto a outra a reescreve → exit 4, `main` intacto. As duas editam o mesmo `.ts` → exit 4, `main` intacto.
 
 **Âncora:** `scripts/integrar-fase.sh` › `resolver_um`; `scripts/lib/integracao.sh` › `integracao_resolver_ledger`.
 
