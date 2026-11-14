@@ -9,3 +9,4 @@ alwaysApply: true
 - **Fronteira entre modos:** aprovada a spec, abra um **New Chat** (equivalente ao `/clear`) e execute numa sessão limpa, lendo só o `SETUP.md`.
 - **Subagentes:** a revisão de fecho de contexto fresco (`AGENTS.md` §O loop) e as etapas marcadas `delegar a subagente` na spec rodam como background agent.
 - **Model/effort:** o dono seta um model/effort por sessão; a spec termina recomendando qual, e etapa que pede outro entra como `delegar a subagente: <modelo> · <effort>` (detalhe em `CLAUDE.md` §Model e effort).
+- **Bots:** add-on opcional. Sem bot declarado, nada muda. Quando consultar: `AGENTS.md` §Bots; contrato em `docs/reference/canal.md`.

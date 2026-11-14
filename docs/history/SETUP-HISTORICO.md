@@ -7,3 +7,4 @@
 - F-metodo-v2 — Absorver o melhor do mattpocock/skills no template → [`fases/F-metodo-v2.md`](fases/F-metodo-v2.md)
 - F-metodo-v3 — ADR vira exceção, histórico por fase, grilling proporcional → [`fases/F-metodo-v3.md`](fases/F-metodo-v3.md)
 - F-metodo-v4 — O que o Vaulty aprendeu depois da v3, de volta pro template → [`fases/F-metodo-v4.md`](fases/F-metodo-v4.md)
+- F-metodo-v5 — Canal de bots como add-on opcional → [`fases/F-metodo-v5.md`](fases/F-metodo-v5.md)

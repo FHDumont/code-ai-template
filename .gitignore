@@ -1,8 +1,10 @@
 # dependências
 node_modules/
-# ambiente
+# ambiente e segredos — chave de webhook nunca entra no repo (docs/reference/canal.md)
 .env
-.env.local
+.env.*
+!.env.example
+*.env
 # SO
 .DS_Store
 # investigações/spikes efêmeros e planos de rascunho da ferramenta (não versionar)

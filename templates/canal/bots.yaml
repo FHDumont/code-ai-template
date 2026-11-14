@@ -1,0 +1,17 @@
+# Exemplo sem segredos. Copie para a raiz do canal, fora do git.
+# Apague o bot que este projeto não usa. A chave mora no arquivo `env` (chmod 600), nunca aqui.
+# Sem `teto_diario` o aviso não dispara: teto ausente não vira ilimitado.
+
+projeto: exemplo
+teto_diario: 40
+agrupar_segundos: 60
+
+bots:
+  marketing:
+    env: ~/.canal/segredos/marketing.env
+    tipos: [qa, duvida]
+    para_que: QA de vídeo e roteiro
+  infraestrutura:
+    env: ~/.canal/segredos/infraestrutura.env
+    tipos: [duvida]
+    para_que: revisar deploy e DNS
