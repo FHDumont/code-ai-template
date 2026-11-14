@@ -5,8 +5,9 @@ alwaysApply: true
 
 `AGENTS.md` é a instrução canônica — leia primeiro. Aqui só a mecânica do loop no Cursor.
 
-- **Passada de raciocínio:** use o modo **Plan** (ou Ask) pra auditar o código, discutir o aberto com o dono e **redigir a spec em `docs/SETUP.md`**. Não coda nessa passada.
-- **Fronteira entre modos:** aprovada a spec, abra um **New Chat** (equivalente ao `/clear`) e execute numa sessão limpa, lendo só o `SETUP.md`.
+- **Passada de raciocínio:** use o modo **Plan** (ou Ask) pra auditar o código, ler `scripts/fases-ativas.sh`, discutir o aberto com o dono e **redigir a spec**. Fase solitária: a spec fica em `docs/SETUP.md`, como sempre. Fase paralela: uma spec por fase; a abertura (`scripts/abrir-fase.sh`) cria branch e worktree. Não coda produto nessa passada.
+- **Fronteira entre modos:** aprovada a spec, abra um **New Chat** (equivalente ao `/clear`) e execute numa sessão limpa. Solitária: leia o `SETUP.md` deste checkout. Paralela: uma sessão por worktree, lendo o `SETUP.md` de lá.
+- **Integração:** o fecho chama `scripts/integrar-fase.sh` (uma fase por vez). Conflito de lógica ou validação que falha para e pede decisão. Não faça merge na mão.
 - **Subagentes:** a revisão de fecho de contexto fresco (`AGENTS.md` §O loop) e as etapas marcadas `delegar a subagente` na spec rodam como background agent.
 - **Model/effort:** o dono seta um model/effort por sessão; a spec termina recomendando qual, e etapa que pede outro entra como `delegar a subagente: <modelo> · <effort>` (detalhe em `CLAUDE.md` §Model e effort).
-- **Bots:** add-on opcional. Sem bot declarado, nada muda. Quando consultar: `AGENTS.md` §Bots; contrato em `docs/reference/canal.md`.
+- **Bots:** add-on opcional. Sem bot declarado, nada muda. Quando consultar: `AGENTS.md` §Bots; contrato em `docs/reference/canal.md`. Fase paralela não muda o contrato (R-006).

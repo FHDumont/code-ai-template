@@ -11,8 +11,8 @@ Instruções para o agente de código deste projeto. **Núcleo agnóstico de fer
 
 Uma superfície, **dois modos** — os dois são você, os dois com o repo na mão:
 
-- **Plan mode (raciocínio):** lê os docs vivos e **audita o código real**, discute o aberto com o dono (uma pergunta por vez), e **grava a spec da fase no `docs/SETUP.md`** — e para aí. Ler código é o trabalho desta passada; **escrever código é da outra**.
-- **Code mode (execução):** em sessão nova (contexto limpo), lê a spec do `SETUP.md`, implementa aterrado no código, roda os critérios de sucesso na mesma resposta, e atualiza os docs vivos numa única passada antes de encerrar.
+- **Plan mode (raciocínio):** lê os docs vivos, o registro das fases ativas e **audita o código real**, discute o aberto com o dono (uma pergunta por vez), e **grava a spec** — e para aí. Ler código é o trabalho desta passada; **escrever código é da outra**. Fase solitária: a spec fica no `docs/SETUP.md`. Fase paralela: uma spec por fase, no worktree dela (`docs/reference/integracao.md`, R-001).
+- **Code mode (execução):** em sessão nova (contexto limpo), lê a spec do `SETUP.md` daquele checkout, implementa aterrado no código, roda os critérios de sucesso na mesma resposta, e atualiza os docs vivos numa única passada antes de encerrar.
 
 Entre os dois, uma **fronteira dura**: é o dono que limpa o contexto e abre a execução. Cada fase é tarefa independente — o contexto mora nos docs vivos, não na sessão.
 
@@ -21,7 +21,7 @@ Como o planejador **tem o repo**, a spec nasce confirmada contra o código: nome
 **Regra que precisa valer sempre vira hook.** Este arquivo e as skills **aconselham** — quem lê é o agente, e agente esquece; só o hook **enforça**, porque roda fora do modelo e barra a chamada antes de ela acontecer. Skill é ordem de passos, não guardrail. Daí o critério: **regra violada mais de uma vez é candidata a hook**, e a regra escrita continua sendo o porquê que a mensagem do bloqueio cita — hook sem regra escrita vira parede sem explicação. Os dois hooks do template mostram a forma: `.claude/hooks/block-dangerous-git.sh` (git destrutivo) e `.claude/hooks/block-comandos-do-dono.sh` (o `git add` cego, mais exemplos comentados dos comandos que só o dono roda). O inverso também vale: **hook que não paga um risco medido não entra** — meça antes de escrever guardrail contra um problema que você supõe ter.
 
 - **Audite o estado antes de modelar.** Fase que mexe em schema, enum ou estado persistido: no plan mode, audite o código real (migrations, tipos, dados) antes de escrever a spec. Barato, e evita spec que presume estado que não existe.
-- **Uma fase de cada vez.** `docs/SETUP.md` tem **uma** spec, e as fases entram na ordem do ROADMAP. Implemente, atualize os vivos, **pare**, resuma ao dono e peça aprovação pra próxima.
+- **Uma fase solitária de cada vez; paralelas só sem cruzar arquivo.** Nada em execução e um único corte: o loop de hoje, spec no `SETUP.md`, sem worktree obrigatório. Várias fases independentes, ou uma fase nova enquanto outra paralela já corre: cada uma na sua branch e no seu worktree, registro em `docs/fases-ativas/<id>.md`, fragmento em `docs/changes/<id>.md`. Quem depende de fase ainda não integrada fica na fila. O planejamento consulta `scripts/fases-ativas.sh` e não abre por cima de reivindicação — fase solitária sem registro conta como o repo inteiro. Detalhe: `docs/reference/integracao.md`.
 - **Fique no modo até a fase fechar.** Se, em code mode, a conversa puxa pra fora do escopo da spec atual (nova ideia, decisão de arquitetura, refatoração não pedida), **pare e pergunte ao dono**: seguir no code, dentro do escopo, ou voltar pro plan pra tratar aquilo como fase própria? É o mesmo princípio de "sem refatoração de carona", aplicado à troca de modo.
 - **Revisão de fecho com contexto fresco.** Ao fechar a fase em code mode — depois de rodar os critérios, antes do commit — dispare um **subagente sem o contexto da sessão**, que recebe só os *docs vivos + o diff* e confere se o entregue bate com a intenção da spec. Limpo → passada única de docs + commit. Divergiu → corrija antes. Fase que não toca código pode pular.
 - **O plano durável é a spec.** A spec no `docs/SETUP.md` é o plano canônico (o porquê arquitetural distila em ADR; a regra de comportamento, em `R-NNN`; a narrativa de implementação, ao fechar, no arquivo da fase em `docs/history/fases/`). O arquivo de plano nativo da ferramenta (Claude Code `~/.claude/plans`, Cursor) é **rascunho efêmero — fica fora do git**; quem copia a spec pra `docs/SETUP.md` é a **própria sessão de plan mode**, logo depois da aprovação e sem commitar, porque a execução pode ser de outro agente, que não lê esse arquivo. O commit da spec é da execução, junto com o primeiro código. **A spec é enxuta** (`templates/spec-fase.md`): passos e etapas de uma linha, porquê por ponteiro (ADR, `R-NNN`, termo do `CONTEXT.md`) sem reproduzir o argumento, e a árvore do grilling (`Q1…Qn`) **não entra** — só as decisões que ela produziu. Teto orientativo de 4 KB.
@@ -30,14 +30,14 @@ Como o planejador **tem o repo**, a spec nasce confirmada contra o código: nome
 
 ## Bots — add-on opcional
 
-Sem bot declarado, nada muda: a fase é só code. Com bot, o agente consulta **só** os listados na issue de trabalho (`.github/ISSUE_TEMPLATE/trabalho.md`) ou na seção `## Bots` da spec (`templates/spec-fase.md`). A spec herda a issue; uma fase pode listar vários. Modos: `planejamento`, `codificação`, `disponível-para-dúvidas` (mais de um por bot). O contrato — pasta fora do git, pedido e resposta, aviso só com ponteiro, custo, chave fora do repo — está em `docs/reference/canal.md`. Chave de webhook e o conteúdo de `~/.canal/` não entram no repo, no log, na issue nem no commit.
+Sem bot declarado, nada muda: a fase é só code. Com bot, o agente consulta **só** os listados na issue de trabalho (`.github/ISSUE_TEMPLATE/trabalho.md`) ou na seção `## Bots` da spec (`templates/spec-fase.md`). A spec herda a issue; uma fase pode listar vários. Modos: `planejamento`, `codificação`, `disponível-para-dúvidas` (mais de um por bot). O contrato — pasta fora do git, pedido e resposta, aviso só com ponteiro, custo, chave fora do repo — está em `docs/reference/canal.md`. Fase paralela não muda o contrato: a pasta já é por id de fase (R-006). Chave de webhook e o conteúdo de `~/.canal/` não entram no repo, no log, na issue nem no commit.
 
 ## Stack e comandos
 
 > Ajuste esta seção pro seu projeto.
 >
 > - Build: `...`
-> - Test: `...`
+> - Test: `bash scripts/validar.sh` — neste template, os testes do método; projeto derivado acrescenta typecheck, lint e teste da stack no mesmo script
 > - Lint/format: `...`
 > - Run local: `...`
 
@@ -67,12 +67,12 @@ Ficam em `docs/`. São a memória compartilhada entre o plan, o code, e as sess�
 | `CHANGELOG.md`      | o que já entrou              | ledger: 1 linha por fase entregue     |
 | `DECISOES.md`       | o que foi decidido e por quê | índice: 1 linha por ADR               |
 | `DEBITO-TECNICO.md` | o que está aberto            | só débito ativo; **máx. 3 frases** cada |
-| `SETUP.md`          | o que estamos fazendo agora  | exatamente 1 spec                     |
+| `SETUP.md`          | o que estamos fazendo agora  | 1 spec neste checkout                 |
 
 
 Detalhe pesado vive fora dos vivos: texto cheio de ADR em `docs/adr/`, regras de comportamento `R-NNN` em `docs/reference/`, specs concluídas (+ notas de implementação) em `docs/history/fases/<ID>.md` — um arquivo por fase, com `docs/history/SETUP-HISTORICO.md` como índice de uma linha por fase —, débito fechado em `docs/history/DEBITO-RESOLVIDO.md`.
 
-**Quente vs. frio (economia de contexto).** Plan mode pré-carrega só **SETUP + ROADMAP + `CONTEXT.md`** — este último é o glossário de **linguagem ubíqua** do domínio, **uma linha por termo**, e a spec e o código herdam o vocabulário dele; o texto cheio de cada termo (exemplos, números, mecanismo) é frio e mora em `docs/reference/dominio.md`. Termo afiado numa conversa de plan mode entra nos dois na mesma passada. Some `DEBITO-TECNICO` se a fase toca área com débito conhecido. **CHANGELOG, DECISOES e o texto cheio dos ADRs são frios** — ledgers que crescem sem teto; consulte sob demanda (`grep` pelo ID).
+**Quente vs. frio (economia de contexto).** Plan mode pré-carrega só **SETUP + ROADMAP + `CONTEXT.md`** — este último é o glossário de **linguagem ubíqua** do domínio, **uma linha por termo**, e a spec e o código herdam o vocabulário dele; o texto cheio de cada termo (exemplos, números, mecanismo) é frio e mora em `docs/reference/dominio.md`. Termo afiado numa conversa de plan mode entra nos dois na mesma passada. Some `DEBITO-TECNICO` se a fase toca área com débito conhecido. Some a saída de `scripts/fases-ativas.sh`: é o que está em execução, e não é um sexto doc vivo. **CHANGELOG, DECISOES e o texto cheio dos ADRs são frios** — ledgers que crescem sem teto; consulte sob demanda (`grep` pelo ID).
 
 ## Inbox de achados — GitHub Issues
 
@@ -95,7 +95,7 @@ Os **5 docs vivos são um conjunto fixo — não se adiciona doc vivo.** Todo o 
 | referência durável (how-to, deploy, prompts, i18n) | **`docs/reference/`** — cabeçalho de 1 linha dizendo pra que serve; linkada do README; lida sob demanda |
 | investigação / spike / comparação | **efêmero** — `docs/scratch/` (ignorado no git); distila num balde acima **ou é descartado**, nunca acumula |
 
-**Regra de ouro:** todo doc commitado tem uma casa e um propósito de 1 linha. Se não cabe em nenhum balde, provavelmente não deve ser commitado. **Invariante:** `docs/` raiz = só os docs vivos (+ `adr/`, `history/`, `reference/`).
+**Regra de ouro:** todo doc commitado tem uma casa e um propósito de 1 linha. Se não cabe em nenhum balde, provavelmente não deve ser commitado. **Invariante:** `docs/` raiz = só os docs vivos (+ `adr/`, `history/`, `reference/`, `fases-ativas/`, `changes/`). Os dois últimos não são vivos: no `main` só têm o `LEIA.md`; o `F-xxx.md` existe na branch da fase e a integração apaga.
 
 ## Regra de migração — mantenha os vivos enxutos
 
@@ -106,7 +106,7 @@ A regra mais importante. O detalhe de "como/por quê" tem quatro destinos, por t
 - **narrativa de implementação não-arquitetural** (desviei da spec por X; o caminho óbvio falhou por Y) → **bloco "Notas de implementação" no arquivo da fase** em `docs/history/fases/`.
 - **o diff literal** (o que exatamente mudou) → **git**. Markdown não duplica o que o git já guarda.
 
-**A cada commit**, mantenha os vivos em dia: registre a entrega no `CHANGELOG.md` (uma linha), atualize `DEBITO-TECNICO.md` (débito novo/resolvido) e, se a entrega divergiu do pedido por decisão de arquitetura, adicione um ADR.
+**A cada commit**, mantenha os vivos em dia: registre a entrega no `CHANGELOG.md` (uma linha), atualize `DEBITO-TECNICO.md` (débito novo/resolvido) e, se a entrega divergiu do pedido por decisão de arquitetura, adicione um ADR. Em fase paralela essa escrita vai para o fragmento `docs/changes/<id>.md` (R-003); o ledger do `main` muda na integração.
 
 **Ao concluir uma fase:**
 
@@ -114,7 +114,7 @@ A regra mais importante. O detalhe de "como/por quê" tem quatro destinos, por t
 2. Mova a spec inteira de `SETUP.md` → `docs/history/fases/F-xxx.md` (arquivo novo) e acrescente **uma linha** no índice `history/SETUP-HISTORICO.md`, anexando no arquivo da fase um bloco **"Notas de implementação"** com o que vale reler depois (desvios, soluções não-óbvias, becos evitados) — memória, não log passo-a-passo, que o git já tem. Escreva nota só quando houver algo que mereça.
 3. Colapse a fase em **uma linha** no `CHANGELOG.md`: `F-xxx — o que entrou — AAAA-MM-DD`.
 4. **Remova** a fase do `ROADMAP.md` (o CHANGELOG é que guarda o entregue).
-5. **`SETUP.md` fica vazio.** A spec da próxima fase nasce em plan mode e é **commitada pela execução dela**, junto com o primeiro código — nunca pelo fecho da fase anterior.
+5. **`SETUP.md` fica vazio.** A spec da próxima fase nasce em plan mode e é **commitada pela execução dela**, junto com o primeiro código — nunca pelo fecho da fase anterior. Em fase paralela, os itens 3 e 4 e a linha do índice vão para o fragmento; quem aplica no `main` é `scripts/integrar-fase.sh`. O arquivo `docs/history/fases/F-xxx.md` continua nascendo na branch.
 
 A atualização dos docs vivos do fecho (itens 2–4) pode entrar no último commit substantivo da fase **ou** num commit `docs: fecho da F-xxx` próprio — **com a condição de esse commit não carregar código**. A nota de implementação só existe depois da revisão de fecho com contexto fresco rodar, e exigir tudo num commit só transformava `--amend` em obrigatório no ponto mais arriscado do fluxo. Código junto continua proibido: é o commit que a revisão acabou de examinar.
 
@@ -154,7 +154,7 @@ Confirme quando há **risco real ou dúvida real** — não a cada passo. Dentro
 
 **SEMPRE pedir confirmação (risco real):**
 
-- Operações destrutivas ou irreversíveis: drop table, delete em massa, `force-push`, remover arquivos, reescrever histórico git.
+- Operações destrutivas ou irreversíveis: drop table, delete em massa, `force-push` na mão, remover arquivos, reescrever histórico git. O `push --force-with-lease` que `scripts/integrar-fase.sh` faz em branch `fase/*`, depois do rebase, é a rota do fecho — o pedido de fecho já autorizou.
 - Gasto significativo: rodar processo caro, consumir recurso em volume, qualquer coisa que custe de verdade.
 - Instalar dependência nova não prevista.
 - Mudar arquitetura, trocar biblioteca, ou alterar schema do banco.
@@ -180,12 +180,12 @@ Em dúvida entre pausar ou seguir num passo **reversível e de baixo risco**, **
 - **`main` só recebe merge de PR.** Ele é protegido, e toda fase nasce numa branch a partir do `main` atualizado. **Nunca commite direto no `main`.**
 - **ID da fase:** o maior `F-NNN` presente em `CHANGELOG`, `history/SETUP-HISTORICO.md` e `ROADMAP`, mais um — não "o último que eu vi mais um".
 - **Nunca `git add -A`, `git add --all` nem `git add .`** — sempre por caminho explícito, com o `git status` conferido antes. O working tree é compartilhado com subagentes e carrega arquivo alheio à etapa. Guardrail: `.claude/hooks/block-comandos-do-dono.sh`.
-- **Uma fase = uma branch = um PR.** A spec pode ser entregue em **1+ etapas**, e **cada etapa é um commit** na branch da fase — commite a etapa que terminou antes de abrir a próxima. Nome da branch: `fase/F-xxx-slug` (trabalho avulso fora de fase: `fix/slug`, `chore/slug`).
+- **Uma fase = uma branch = um PR.** Várias fases paralelas são várias branches, cada uma com o seu PR, integradas uma por vez. A spec pode ser entregue em **1+ etapas**, e **cada etapa é um commit** na branch da fase — commite a etapa que terminou antes de abrir a próxima. Nome da branch: `fase/F-xxx-slug` (trabalho avulso fora de fase: `fix/slug`, `chore/slug`). Fase paralela: worktree irmão `<repo>-fases/<id>`, primeiro commit `docs: abre <id>` (spec, registro, fragmento), push, sem PR. A abertura é `scripts/abrir-fase.sh`.
 - **Commits: Conventional Commits.** Prefixos `feat: fix: docs: test: refactor: chore:`; mensagem no imperativo, escopo claro, uma etapa por commit, sem refatoração não pedida junto. **Nunca** adicione trailer de atribuição de IA (`Co-Authored-By` ou similar).
-- **O pedido de fecho é a validação — o fecho é 100% do agente e corre até o fim sem pausa.** "Fechar fase" — digitado ou via ritual da ferramenta — significa que o dono testou e libera a sequência inteira. **Falha ainda para:** critério que falha ou revisão de fecho que diverge interrompem o fecho e voltam pro código — falha reportada, não pedido de confirmação. Liberado, o fecho corre inteiro: abre o PR (corpo curto: o que/por quê + critérios, referência à `F-xxx`) via `gh`/CLI do forge → confirma checks verdes → **integra por `gh pr merge --rebase --delete-branch`** (apaga remota e local de uma vez — o hook bloqueia `git branch -D`) **→ sincroniza o `main` local** (`git switch main && git pull`). O dono não toca no GitHub. Ao terminar, `git branch` mostra só `main`, atualizado com o `origin/main`.
+- **O pedido de fecho é a validação — o fecho é 100% do agente e corre até o fim sem pausa.** "Fechar fase" — digitado ou via ritual da ferramenta — significa que o dono testou e libera a sequência inteira. **Falha ainda para:** critério que falha, revisão de fecho que diverge, ou integração que não sai 0 interrompem o fecho — falha reportada, não pedido de confirmação. Liberado, o fecho corre até a integração: `scripts/integrar-fase.sh` (skill `/integrar-fase`) rebaseia na `main`, resolve conflito trivial de ledger, roda `scripts/validar.sh`, abre o PR se ainda não houver (corpo curto: o que/por quê + critérios, referência à `F-xxx`) e **integra por `gh pr merge --rebase --delete-branch`**. O hook bloqueia `git branch -D` e bloqueia force na mão; o script é a rota, inclusive o `--force-with-lease` só em `fase/*`. Conflito de lógica ou validação que falha: para, a trava fica, o dono decide. Em solitária, no fim `git switch main && git pull` e `git branch` mostra só `main`. Em paralela, as outras fases continuam nas branches e worktrees delas; a que integrou sai. O dono não toca no GitHub.
 - **Um CI por fecho.** Checks verdes conferidos **antes** do merge; o build de imagem que dispara no merge é entrega, não gate — o fecho termina no merge.
 - **Histórico linear — sempre `--rebase`.** `gh pr merge --rebase --delete-branch` põe os commits da fase lineares no `main`, preservando 1 commit por etapa. **Nunca** `--merge` (criaria merge commit e ramificaria o gráfico) nem `--squash` (colapsaria as etapas num commit só). O histórico do `main` é uma linha reta.
-- **Reescrita de história só no que ainda é local.** `rebase`/`amend`/`force-push` valem enquanto a branch não foi publicada; branch já em PR é imutável. (Config do repo: `main` protegido exigindo PR + checks verdes, mas permitindo o merge do agente — senão o loop trava.)
+- **Reescrita de história só no que ainda é local — com uma exceção.** `rebase`/`amend`/`force-push` na mão valem enquanto a branch não foi publicada; branch já em PR não se reescreve na mão. A integração é a exceção medida: `scripts/integrar-fase.sh` rebaseia a `fase/*` em `origin/main` e, se a branch já estava no remoto, faz `push --force-with-lease` **só nela**, nunca na `main`. (Config do repo: `main` protegido exigindo PR + checks verdes, mas permitindo o merge do agente — senão o loop trava.)
 
 ## Em resumo
 

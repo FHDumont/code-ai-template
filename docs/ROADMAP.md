@@ -9,5 +9,5 @@
 
 ## Próximas
 
-- **F-metodo-v6** — scripts do canal (`canal-avisar` e o disparador: espera no shell, aviso só com ponteiro, agrupamento e teto diário) — fecha em código o contrato v1 de `docs/reference/canal.md`, sem mudar o contrato.
+- **F-metodo-v7** — scripts do canal (`canal-avisar` e o disparador: espera no shell, aviso só com ponteiro, agrupamento e teto diário) — fecha em código o contrato v1 de `docs/reference/canal.md`, sem mudar o contrato.
 

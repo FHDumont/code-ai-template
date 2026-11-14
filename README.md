@@ -10,8 +10,8 @@ Template de onboarding para novos projetos. Não traz stack nem framework — tr
 
 Uma superfície, **dois modos** — os dois no agente, os dois com o repo na mão:
 
-- **Plan mode (raciocínio):** lê os docs vivos e **audita o código real**, discute, decide, e **grava a spec da fase no `SETUP.md`**. Não coda. Nomes de arquivo/símbolo nascem verificados, não hipóteses.
-- **Code mode (execução):** em sessão nova (contexto limpo), lê a spec, implementa aterrado, e atualiza os docs vivos numa passada. Ao fechar, uma **revisão de contexto fresco** (subagente que só vê docs vivos + diff) confere entregue-vs-spec antes do commit.
+- **Plan mode (raciocínio):** lê os docs vivos e **audita o código real**, discute, decide, e **grava a spec da fase**. Não coda. Nomes de arquivo/símbolo nascem verificados, não hipóteses. Uma fase só, com nada em execução: a spec fica no `SETUP.md`, como sempre. Várias fases que não se tocam: uma spec e um worktree cada (`docs/reference/integracao.md`).
+- **Code mode (execução):** em sessão nova (contexto limpo), lê a spec, implementa aterrado, e atualiza os docs vivos numa passada. Ao fechar, uma **revisão de contexto fresco** (subagente que só vê docs vivos + diff) confere entregue-vs-spec antes do commit. O merge é `scripts/integrar-fase.sh`: uma fase por vez, conflito de lógica para.
 
 A fronteira entre planejar e executar — com o contexto limpo no meio — impede o agente de arrastar o raciocínio pra dentro da execução e entupir a janela, e mantém cada fase como tarefa independente. O handoff entre os modos, e a continuidade entre sessões, acontece pelos **docs vivos**.
 
@@ -37,19 +37,22 @@ CONVENCOES.md              padrões de código/UI DESTE projeto (preencha; está
 CONTEXT.md                 linguagem ubíqua: 1 termo por conceito (preencha; cresce sozinho)
 
 .claude/                   mecânica executável do loop (Claude Code)
-├─ skills/                 rituais: planejar-fase, fechar-fase, verificar-referencia, grilling
+├─ skills/                 rituais: planejar-fase, fechar-fase, integrar-fase, verificar-referencia, grilling
 ├─ agents/                 varredura.md — varre o código em modelo leve e devolve só arquivo:linha
 │                          revisor-fecho.md — a revisão de fecho de contexto fresco, com o checklist da casa
 ├─ hooks/                  block-dangerous-git.sh — git destrutivo e commit no main viram erro (+ .test.sh)
 │                          block-comandos-do-dono.sh — git add cego (+ exemplos comentados)
 └─ settings.json           registra os hooks como PreToolUse/Bash
 
-docs/                      ← só arquivos VIVOS (estado atual)
+scripts/                   abrir, listar e integrar fases (a validação é scripts/validar.sh)
+docs/                      ← só arquivos VIVOS na raiz (estado atual)
 ├─ ROADMAP.md              fases futuras + a atual; 1 linha por fase
 ├─ CHANGELOG.md            1 linha por fase entregue (ledger, append-only)
 ├─ DECISOES.md             índice de ADRs; 1 linha por decisão (ledger)
 ├─ DEBITO-TECNICO.md       só débito ABERTO
-├─ SETUP.md                spec da fase ATUAL — exatamente uma
+├─ SETUP.md                spec da fase solitária neste checkout — exatamente uma
+├─ fases-ativas/           registro por fase paralela, na branch dela; no main só o LEIA.md
+├─ changes/                fragmento dos ledgers por fase paralela; no main só o LEIA.md
 ├─ adr/                    referência: texto cheio dos ADRs (imutável por entrada)
 │  ├─ TEMPLATE.md          modelo de ADR
 │  └─ ADR-000.md           convenção de numeração
@@ -59,11 +62,14 @@ docs/                      ← só arquivos VIVOS (estado atual)
 │  └─ DEBITO-RESOLVIDO.md  débito fechado, com nota de resolução
 ├─ reference/              (sob demanda) referência durável: how-to, deploy, prompts…
 │  ├─ referencias.md       repos externos vigiados + o SHA até onde já revisamos
-│  └─ canal.md             contrato v1 do canal de bots (add-on opcional)
+│  ├─ canal.md             contrato v1 do canal de bots (add-on opcional)
+│  └─ integracao.md        fases paralelas: registro, fragmento, fila, trava (R-001…R-006)
 └─ scratch/                (ignorado no git) investigações/spikes efêmeros
 
 templates/                 scaffolding reutilizável
 ├─ spec-fase.md            formato de uma spec de fase (lido pelo plan mode)
+├─ fase-ativa.md           modelo do registro (paralela)
+├─ fragmento-fase.md       modelo do fragmento de ledgers (paralela)
 └─ canal/                  modelos do canal de bots (add-on; copiar para fora do git)
 
 examples/                  PREENCHIDO — leia pra ver o método rodando
@@ -76,7 +82,7 @@ examples/                  PREENCHIDO — leia pra ver o método rodando
 Os arquivos em `docs/` e o `CONVENCOES.md` vêm **vazios** (só estrutura + comentário).
 Os de `examples/` vêm **preenchidos** com um projeto-brinquedo coerente ("Recados", uma API de notas) pra você ver como cada doc fica em uso e como as migrações acontecem.
 
-> **`docs/` raiz = só docs vivos.** Os 5 vivos são um conjunto fixo. Doc auxiliar roteia por balde (decisão→ADR, convenção→CONVENCOES, referência durável→`docs/reference/`, investigação efêmera→`docs/scratch/`). Regra e tabela completa em `AGENTS.md`.
+> **`docs/` raiz = só docs vivos.** Os 5 vivos são um conjunto fixo. `fases-ativas/` e `changes/` não são vivos: no `main` só têm o `LEIA.md`. Doc auxiliar roteia por balde (decisão→ADR, convenção→CONVENCOES, referência durável→`docs/reference/`, investigação efêmera→`docs/scratch/`). Regra e tabela completa em `AGENTS.md`.
 
 ---
 
@@ -88,7 +94,7 @@ Os de `examples/` vêm **preenchidos** com um projeto-brinquedo coerente ("Recad
 3. **Configure o agente:** o `AGENTS.md` é o núcleo — use como está, ajuste só a seção de stack/comandos. A mecânica por ferramenta já vem pronta: `CLAUDE.md` (Claude Code) e `.cursor/rules/metodo.mdc` (Cursor).
 4. **Preencha o** `CONVENCOES.md` com os padrões de código/UI do seu projeto (use `examples/CONVENCOES.md` como molde). Sem convenções fortes ainda? Deixe mínimo e cresça depois.
 5. **Defina o ROADMAP:** preencha `docs/ROADMAP.md` com as fases de um MVP enxuto, 1 linha cada.
-6. **Rode o loop:** plan mode audita o código e grava a spec da fase em `docs/SETUP.md` → você aprova e limpa o contexto (`/clear` no Claude Code, New Chat no Cursor) → code mode executa, roda a revisão de fecho e atualiza os vivos → você aprova a fase → repete. No Claude Code, os rituais já vêm como skills: `/planejar-fase` e `/fechar-fase`.
+6. **Rode o loop:** plan mode audita o código e grava a spec da fase em `docs/SETUP.md` → você aprova e limpa o contexto (`/clear` no Claude Code, New Chat no Cursor) → code mode executa, roda a revisão de fecho e atualiza os vivos → você aprova a fase → repete. No Claude Code, os rituais já vêm como skills: `/planejar-fase` e `/fechar-fase`. Se o planejamento cortar fases que não se tocam, cada uma ganha worktree e a integração entra uma por vez (`/integrar-fase`). Uma fase só, com nada no ar, não muda esse passo.
 7. **(Opcional) apague `examples/`** quando não precisar mais da referência.
 
 ### Exemplo: as primeiras interações
@@ -148,7 +154,7 @@ As instruções de acoplamento também estão no topo do próprio arquivo, pra q
 
 **O que é.** Um contrato para o agente de código consultar bots (ou um humano no lugar deles) durante o planejamento, a codificação ou uma dúvida. Sem bot declarado, o loop não muda.
 
-**Onde está.** A regra curta é `AGENTS.md` §Bots. O contrato v1 é `docs/reference/canal.md`. A issue de trabalho é `.github/ISSUE_TEMPLATE/trabalho.md` (a seção `## Bots` é a que a spec herda). Os modelos para copiar para `~/.canal/<projeto>/` estão em `templates/canal/`. A decisão é a ADR-001.
+**Onde está.** A regra curta é `AGENTS.md` §Bots. O contrato v1 é `docs/reference/canal.md`. A issue de trabalho é `.github/ISSUE_TEMPLATE/trabalho.md` (a seção `## Bots` é a que a spec herda). Os modelos para copiar para `~/.canal/<projeto>/` estão em `templates/canal/`. A decisão é a ADR-001. Fase paralela usa a mesma pasta por id de fase (R-006).
 
 **Como o time abre a issue.** Template Trabalho: objetivo, contexto, critério de pronto e uma linha por bot (`slug`, modos, para quê). Nenhum bot na seção = execução só code. Etiqueta `bot:<slug>` é opcional e só serve para filtrar.
 
@@ -156,7 +162,7 @@ As instruções de acoplamento também estão no topo do próprio arquivo, pra q
 
 ## Complementos — biblioteca de skills de engenharia
 
-O template traz as skills do **loop** (planejar, fechar, vigiar a referência, grilling) e para aí de propósito: ele é um método, não uma caixa de ferramentas. Pro trabalho de engenharia dentro de uma fase — escrever teste antes, caçar bug, revisar código, prototipar, pesquisar — vale instalar uma biblioteca pronta em vez de escrever a sua.
+O template traz as skills do **loop** (planejar, fechar, integrar, vigiar a referência, grilling) e para aí de propósito: ele é um método, não uma caixa de ferramentas. Pro trabalho de engenharia dentro de uma fase — escrever teste antes, caçar bug, revisar código, prototipar, pesquisar — vale instalar uma biblioteca pronta em vez de escrever a sua.
 
 A recomendação é o plugin **`mattpocock-skills`** ([mattpocock/skills](https://github.com/mattpocock/skills)), de onde parte do método daqui já foi portada:
 
