@@ -5,6 +5,7 @@ Instruções para o agente de código deste projeto. **Núcleo agnóstico de fer
 - Flavors (só mecânica da própria ferramenta + ponteiros): Claude Code → `CLAUDE.md` · Cursor → `.cursor/rules/metodo.mdc`.
 - Convenções de código/UI **deste** projeto: `CONVENCOES.md`. Linguagem ubíqua do domínio: `CONTEXT.md`.
 - Projeto de LLM/agentes: acople o add-on opcional e referencie aqui (ex.: `PERFIL-LLM.md`). Instruções no README.
+- Bots: add-on opcional, no mesmo espírito. Sem bot declarado, nada muda. Quando consultar: §Bots. Contrato: `docs/reference/canal.md`.
 
 ## O loop — plan e code
 
@@ -26,6 +27,10 @@ Como o planejador **tem o repo**, a spec nasce confirmada contra o código: nome
 - **O plano durável é a spec.** A spec no `docs/SETUP.md` é o plano canônico (o porquê arquitetural distila em ADR; a regra de comportamento, em `R-NNN`; a narrativa de implementação, ao fechar, no arquivo da fase em `docs/history/fases/`). O arquivo de plano nativo da ferramenta (Claude Code `~/.claude/plans`, Cursor) é **rascunho efêmero — fica fora do git**; quem copia a spec pra `docs/SETUP.md` é a **própria sessão de plan mode**, logo depois da aprovação e sem commitar, porque a execução pode ser de outro agente, que não lê esse arquivo. O commit da spec é da execução, junto com o primeiro código. **A spec é enxuta** (`templates/spec-fase.md`): passos e etapas de uma linha, porquê por ponteiro (ADR, `R-NNN`, termo do `CONTEXT.md`) sem reproduzir o argumento, e a árvore do grilling (`Q1…Qn`) **não entra** — só as decisões que ela produziu. Teto orientativo de 4 KB.
 - **Revisão que divergiu roda de novo sobre a correção.** A correção abre defeito novo com frequência, e só a segunda passada de contexto fresco vê.
 - **Tela nova se mostra durante a execução**, não no fecho: screenshot da etapa pro dono enquanto se faz.
+
+## Bots — add-on opcional
+
+Sem bot declarado, nada muda: a fase é só code. Com bot, o agente consulta **só** os listados na issue de trabalho (`.github/ISSUE_TEMPLATE/trabalho.md`) ou na seção `## Bots` da spec (`templates/spec-fase.md`). A spec herda a issue; uma fase pode listar vários. Modos: `planejamento`, `codificação`, `disponível-para-dúvidas` (mais de um por bot). O contrato — pasta fora do git, pedido e resposta, aviso só com ponteiro, custo, chave fora do repo — está em `docs/reference/canal.md`. Chave de webhook e o conteúdo de `~/.canal/` não entram no repo, no log, na issue nem no commit.
 
 ## Stack e comandos
 
@@ -74,6 +79,8 @@ Detalhe pesado vive fora dos vivos: texto cheio de ADR em `docs/adr/`, regras de
 Fora dos docs vivos existe um inbox informal: **issues do GitHub com label `achado`**, template em `.github/ISSUE_TEMPLATE/achado.md`. É onde o dono registra sem fricção, a qualquer momento, um problema ou uma melhoria que encontrou usando o app.
 
 **Issue é matéria-prima solta, não spec** — lida e triada só em plan mode: no início de toda sessão, rode `gh issue list --label achado --state open` e leia o que houver. Cada item vira uma das três coisas — entra na spec da fase em andamento (se couber no escopo já decidido), vira linha no `ROADMAP.md` como fase própria (se for maior), ou vira ADR/item de `DEBITO-TECNICO.md` (se for decisão registrada, não trabalho — inclusive ADR com status `rejeitado`, quando a decisão é não fazer). Depois de triado, **feche a issue** (`gh issue close`) referenciando o destino — a fase no `SETUP.md`/`ROADMAP.md`, o ID do ADR (aceito ou rejeitado), ou o ID do débito. Issue aberta e sem destino depois do plan mode é sinal de triagem pela metade.
+
+Issue de trabalho que declara bots usa `.github/ISSUE_TEMPLATE/trabalho.md`. A seção `## Bots` dessa issue é a que a spec herda. O template `achado` continua sendo só o inbox e não declara bot.
 
 ## Docs auxiliares — onde cada coisa mora
 

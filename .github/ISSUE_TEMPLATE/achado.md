@@ -10,6 +10,7 @@ Isso é inbox, não spec. Escreva rápido, sem se preocupar com formato perfeito
 o plan mode lê essa issue quando abrir a próxima fase e decide o que vira etapa,
 o que vira ADR, o que vira fase própria. Preencher só o que fizer sentido; apagar
 o resto. Bloco "Item" se repete se for mais de um achado na mesma issue.
+Bot não se declara aqui. Issue de trabalho, com a seção Bots: trabalho.md.
 -->
 
 ## Item 1

@@ -58,11 +58,13 @@ docs/                      ← só arquivos VIVOS (estado atual)
 │  ├─ fases/F-xxx.md       spec concluída + notas de implementação, um arquivo por fase
 │  └─ DEBITO-RESOLVIDO.md  débito fechado, com nota de resolução
 ├─ reference/              (sob demanda) referência durável: how-to, deploy, prompts…
-│  └─ referencias.md       repos externos vigiados + o SHA até onde já revisamos
+│  ├─ referencias.md       repos externos vigiados + o SHA até onde já revisamos
+│  └─ canal.md             contrato v1 do canal de bots (add-on opcional)
 └─ scratch/                (ignorado no git) investigações/spikes efêmeros
 
 templates/                 scaffolding reutilizável
-└─ spec-fase.md            formato de uma spec de fase (lido pelo plan mode)
+├─ spec-fase.md            formato de uma spec de fase (lido pelo plan mode)
+└─ canal/                  modelos do canal de bots (add-on; copiar para fora do git)
 
 examples/                  PREENCHIDO — leia pra ver o método rodando
 ├─ docs/                   espelho de docs/ com o projeto-brinquedo "Recados"
@@ -139,6 +141,16 @@ planeja a próxima fase     →  aprovo e /clear  →  executa a fase do SETUP
 - **Custo em dois eixos** — separe custo cobrado por API de custo coberto por assinatura; conflar os dois engana.
 
 As instruções de acoplamento também estão no topo do próprio arquivo, pra quem abrir ele direto sem passar pelo README.
+
+---
+
+## Add-on opcional: bots
+
+**O que é.** Um contrato para o agente de código consultar bots (ou um humano no lugar deles) durante o planejamento, a codificação ou uma dúvida. Sem bot declarado, o loop não muda.
+
+**Onde está.** A regra curta é `AGENTS.md` §Bots. O contrato v1 é `docs/reference/canal.md`. A issue de trabalho é `.github/ISSUE_TEMPLATE/trabalho.md` (a seção `## Bots` é a que a spec herda). Os modelos para copiar para `~/.canal/<projeto>/` estão em `templates/canal/`. A decisão é a ADR-001.
+
+**Como o time abre a issue.** Template Trabalho: objetivo, contexto, critério de pronto e uma linha por bot (`slug`, modos, para quê). Nenhum bot na seção = execução só code. Etiqueta `bot:<slug>` é opcional e só serve para filtrar.
 
 ---
 

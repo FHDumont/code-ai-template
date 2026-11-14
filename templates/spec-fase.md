@@ -22,6 +22,12 @@ Uma a três linhas: o que esta fase entrega e por quê.
 
 - ...
 
+## Bots
+
+> Opcional. Herda da issue de origem (`.github/ISSUE_TEMPLATE/trabalho.md`) ou é definida no planejamento. A execução consulta só esta lista. Sem a seção, ou com `(nenhum)`, a fase é só code. Um bot por linha, na forma de `docs/reference/canal.md` §Lista: slug, modos separados por vírgula, travessão e o para quê. Modos: `planejamento`, `codificação`, `disponível-para-dúvidas`.
+
+- (nenhum)
+
 ## Passos
 
 1. ...

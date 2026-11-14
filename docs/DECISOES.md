@@ -11,7 +11,10 @@
 > **Secionado por assunto**, seções fixas do projeto (uma tabela por seção, ex.: Método · Plataforma · Domínio A · Domínio B · UI). ADR novo entra na seção dele, não no fim. Não criar history pra decisões — quebraria a trilha. Emenda não vai na linha: vai no bloco `## Emendas` do ADR emendado (ver `docs/adr/TEMPLATE.md`).
 
 
+## Método
+
 | ADR | Título | Status |
 | --- | ------ | ------ |
+| ADR-001 | Canal de bots como add-on opcional do template | accepted |
 
 
