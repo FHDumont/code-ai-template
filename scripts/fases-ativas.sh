@@ -51,7 +51,7 @@ fi
 declare -a fase_ids=() fase_modos=() fase_situacoes=() fase_branches=() fase_worktrees=()
 declare -a fase_arquivos=() fase_areas=() fase_bots=() fase_depende=() fase_escopos=()
 declare -a fila=() fila_roadmap=() fila_fragmento=() fila_issue=()
-declare -A fila_crua=() fila_vista=()
+declare -A fila_crua=()
 
 # A mesma linha não entra duas vezes. A ordem de impressão é outra função.
 guardar_fila() {
@@ -186,10 +186,7 @@ varrer_refs() {
     curto="$ref"
     curto="${curto#origin/}"
     [[ "$curto" == fase/* ]] || continue
-    if [[ -z "${fila_vista[$curto]+x}" ]]; then
-      fila_vista["$curto"]=1
-      ler_fragmento_fila "$ref" "$curto"
-    fi
+    ler_fragmento_fila "$ref" "$curto"
     if [[ -n "${branch_vista[$curto]+x}" ]]; then
       continue
     fi
