@@ -102,7 +102,7 @@ while IFS= read -r seg; do
 
   # git push --force / -f / --force-with-lease
   if has_subcmd "$seg" "push" && has_flag "$seg" '(^|[[:space:]])(--force(-with-lease)?|-f)([[:space:]]|$)'; then
-    block "push forçado (reescreve história publicada)." "$DESTRUTIVA"
+    block "push forçado (reescreve história publicada)." "não force na mão. Atualizar a branch da fase com a main é o \`scripts/integrar-fase.sh\` — force-with-lease só em \`fase/*\`, lá dentro. Fora isso, peça confirmação ao dono (AGENTS.md §Git)."
   fi
 
   # git reset --hard
