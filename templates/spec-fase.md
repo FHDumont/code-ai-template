@@ -22,6 +22,24 @@ Uma a três linhas: o que esta fase entrega e por quê.
 
 - ...
 
+## Modo
+
+> Omita na fase solitária — o default é solitária e o loop não muda (R-001). Na paralela, escreva `paralela`.
+
+paralela
+
+## Reivindica
+
+> Só na paralela. Caminhos que esta fase pode editar. Diretório leva barra no fim. Os ledgers não entram: a integração é dona deles (R-003).
+
+- src/...
+
+## Depende de
+
+> Omita se não houver. Id que ainda não está no CHANGELOG não abre: fica na fila (R-005).
+
+- (nenhuma)
+
 ## Bots
 
 > Opcional. Herda da issue de origem (`.github/ISSUE_TEMPLATE/trabalho.md`) ou é definida no planejamento. A execução consulta só esta lista. Sem a seção, ou com `(nenhum)`, a fase é só code. Um bot por linha, na forma de `docs/reference/canal.md` §Lista: slug, modos separados por vírgula, travessão e o para quê. Modos: `planejamento`, `codificação`, `disponível-para-dúvidas`.

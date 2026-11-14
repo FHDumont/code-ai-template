@@ -18,3 +18,21 @@
 **Termo**: definição de uma linha, dizendo o que ele é.
 _Evitar_: sinônimo-que-não-usamos, outro-sinônimo
 -->
+
+**Fase solitária**: fase aberta sozinha, com a spec no `SETUP.md` do checkout e os ledgers editados na branch.
+_Evitar_: fase única, modo clássico
+
+**Fase paralela**: fase com branch, worktree, registro e fragmento próprios, que convive com outras que não tocam os mesmos arquivos.
+_Evitar_: lote, batch
+
+**Registro da fase**: o arquivo `docs/fases-ativas/<id>.md` com o que a fase paralela reivindica.
+_Evitar_: lockfile, fases-ativas.md único
+
+**Fragmento da fase**: o arquivo `docs/changes/<id>.md` com as linhas que a integração consolida nos ledgers.
+_Evitar_: changeset
+
+**Integração**: o processo serial que entra uma fase no `main`.
+_Evitar_: merge na mão
+
+**Fila**: item que depende de uma fase ainda não integrada e por isso não abre.
+_Evitar_: backlog

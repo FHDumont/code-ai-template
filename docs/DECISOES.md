@@ -16,5 +16,6 @@
 | ADR | Título | Status |
 | --- | ------ | ------ |
 | ADR-001 | Canal de bots como add-on opcional do template | accepted |
+| ADR-002 | Fases paralelas com integração serial | accepted |
 
 

@@ -1,6 +1,6 @@
 # Canal — contrato v1
 
-> Pra que serve: o contrato do canal entre o agente de código e os bots (ou um humano no lugar deles). Add-on opcional. Quem consulta quem está em `AGENTS.md` §Bots; aqui está o como. Os scripts que cumprem o aviso ficam na F-metodo-v6.
+> Pra que serve: o contrato do canal entre o agente de código e os bots (ou um humano no lugar deles). Add-on opcional. Quem consulta quem está em `AGENTS.md` §Bots; aqui está o como. Os scripts que cumprem o aviso ficam na F-metodo-v7. Fases paralelas não mudam este contrato (R-006 em `docs/reference/integracao.md`).
 
 ## Liga e desliga
 
@@ -74,11 +74,15 @@ O mesmo contrato vale sem bot do outro lado. Com `env` vazio ou arquivo ausente,
 
 ## O agente de código
 
-Consulta só a lista da spec, só no modo daquele bot, só no para quê declarado. Grava o pedido no caminho deste contrato. Não lê o `.env`, não imprime a chave, não commita `~/.canal/` nem segredo. Não improvisa o POST: quem avisa é o script da F-metodo-v6, ou a rotina que o projeto já tiver apontada para este contrato.
+Consulta só a lista da spec, só no modo daquele bot, só no para quê declarado. Grava o pedido no caminho deste contrato. Não lê o `.env`, não imprime a chave, não commita `~/.canal/` nem segredo. Não improvisa o POST: quem avisa é o script da F-metodo-v7, ou a rotina que o projeto já tiver apontada para este contrato.
 
-## Até a F-metodo-v6
+## Até a F-metodo-v7
 
 Este template ainda não traz `canal-avisar` nem o disparador. O pedido é o arquivo. Quem responde — bot já ligado, humano ou outro agente — escreve `respostas/`. O agente não faz polling em turno de modelo e não chama o webhook por conta própria.
+
+## Fases paralelas
+
+Duas fases no ar não compartilham pasta: a árvore já é `F-<id>/`. Cada execução lê a seção `## Bots` do `SETUP.md` do próprio worktree. O `teto_diario` é do projeto, então as fases dividem o mesmo teto. Pedidos ao mesmo bot dentro de `agrupar_segundos` podem sair num POST só, com um ponteiro por fase — `avisos` já é lista. Sem bot na spec, a fase paralela também é só code.
 
 ## Prompt da rotina
 

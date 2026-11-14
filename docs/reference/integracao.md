@@ -1,0 +1,108 @@
+# Integração de fases
+
+> Pra que serve: o comportamento de abrir, listar e integrar fases em paralelo. A decisão é a ADR-002. O `AGENTS.md` aponta; aqui está o que o sistema faz.
+
+## R-001 — Modo da fase
+
+A fase é **solitária** ou **paralela**.
+
+Solitária: nenhuma outra fase está em execução e o planejamento abre uma só. A spec fica no `docs/SETUP.md` do checkout, sem commit, e a execução segue o loop de sempre. Não se chama `scripts/abrir-fase.sh`.
+
+Paralela: o planejamento abre mais de uma, ou abre uma enquanto outra paralela já corre, e `scripts/fases-ativas.sh --sobrepor` sai 0 para os caminhos dela. Cada uma nasce com `scripts/abrir-fase.sh`: branch `fase/<id>-<slug>`, worktree em `<diretório-pai>/<repo>-fases/<id>`, primeiro commit `docs: abre <id>`, push, sem pull request. A execução é uma sessão nova com o cwd nesse worktree; a spec é o `docs/SETUP.md` de lá.
+
+**Exemplo:** nada no ar e um bug num arquivo → solitária, spec no checkout. Duas issues, uma mexe em `src/notas/` e outra em `src/tags/` → duas paralelas. Uma solitária já no ar (sem registro) → a próxima não abre; o registro implícito é o repo inteiro.
+
+**Âncora:** `scripts/abrir-fase.sh` › abertura; `scripts/fases-ativas.sh` › lista.
+
+**Rejeitado:** worktree obrigatório na solitária. O caso de uma fase só não muda de forma.
+
+**Origem:** F-metodo-v6, ADR-002.
+
+## R-002 — Registro e descoberta
+
+Fase paralela publica `docs/fases-ativas/<id>.md` na branch dela (modelo em `templates/fase-ativa.md`). O arquivo diz modo, status, branch, `depende_de`, `arquivos`, `areas`, `bots` e uma linha de escopo. Diretório em `arquivos` leva barra no fim; sem barra é arquivo e não cobre o filho.
+
+`scripts/fases-ativas.sh` lê worktrees, branches locais `fase/*` e, com `--fetch`, `origin/fase/*`. Sem esse arquivo, branch `fase/*` ainda não integrada reivindica o repo inteiro. Spec com título `# F-` no `docs/SETUP.md` do checkout da `main` também: é solitária que ainda não virou branch. `--sobrepor caminho…` sai 1 se alguma reivindicação cruza. A lista sai no stdout; o cruzamento, no stderr.
+
+**Exemplo:** `src/notas/` cruza `src/notas/tags.ts`. `src/notas` sem barra não cruza `src/notas/tags.ts`.
+
+**Âncora:** `scripts/fases-ativas.sh` › `registrar`; `templates/fase-ativa.md`.
+
+**Rejeitado:** um markdown único de registro. Ele seria o conflito que o registro existe para evitar.
+
+**Origem:** F-metodo-v6, ADR-002.
+
+## R-003 — Fragmento dos ledgers
+
+Na paralela, a fase não edita `docs/CHANGELOG.md`, `docs/ROADMAP.md`, `docs/DECISOES.md`, `docs/DEBITO-TECNICO.md`, `docs/history/DEBITO-RESOLVIDO.md` nem `docs/history/SETUP-HISTORICO.md`. Escreve `docs/changes/<id>.md` (modelo em `templates/fragmento-fase.md`). A integração aplica e apaga o fragmento e o registro. Arquivo novo (`docs/history/fases/<id>.md`, ADR novo) nasce na branch: não conflita.
+
+Seções: `changelog`, `historico`, `roadmap-remove` (um id por linha), `roadmap-add`, `decisoes` (`secao: Nome` e a linha da tabela), `debito-add`, `debito-resolve` (o id), `debito-resolvido`. Linha de `roadmap-add` com `**F-xxx**` substitui a linha antiga desse id. Sem linha em `changelog`, a integração sai 6.
+
+Na solitária esses arquivos são editados direto, como antes. O fragmento não existe e a integração não procura.
+
+**Exemplo:** a fase tira a si do roadmap e deixa `- **F-020** — exportar — depende de F-012` em `roadmap-add`. No merge, a linha velha de F-020 sai e a nova entra em `## Próximas`.
+
+**Âncora:** `scripts/lib/integracao.sh` › `integracao_aplicar_fragmento`.
+
+**Rejeitado:** a fase paralela editar o ledger "porque o rebase resolve". Dois appends no mesmo fim de arquivo são exatamente o conflito chato; o fragmento tira a fase desse arquivo.
+
+**Origem:** F-metodo-v6, ADR-002.
+
+## R-004 — Conflito trivial e trava
+
+A integração rebaseia a branch em `origin/main`. Conflito em `CHANGELOG`, `SETUP-HISTORICO`, `DECISOES`, `ROADMAP`, `DEBITO-TECNICO`, `DEBITO-RESOLVIDO` ou `SETUP.md` é trivial só se a fase não tirou nem reescreveu linha que não é dela. Linha dela é a que tem `**<id>**` ou começa com `- <id> `. Menção `depende de <id>` não autoriza apagar a linha de outra fase. Os dois lados que só acrescentam linha ficam com as duas. Qualquer outro arquivo em conflito é lógica: o rebase fica parado.
+
+A trava é o ref `refs/integracao/lock` no remoto (mensagem `lock <id>`). Outra fase recebe exit 3. A mesma fase entra de novo (`--continuar`). `--abortar` aborta o rebase e solta a trava. Não se solta trava alheia.
+
+Saídas do script: 0 integrou; 1 uso, branch ou git; 3 trava alheia; 4 conflito de lógica; 5 validação falhou; 6 fragmento sem changelog. Em 4, 5 e 6 a trava fica. `SETUP.md` com título `# F-` também para: o fecho devolve o template e commita antes.
+
+Depois do rebase a validação é `scripts/validar.sh`, salvo `INTEGRACAO_VALIDAR` em teste. Sem esse script, não integra. No uso normal, `gh pr merge --rebase --delete-branch`. `INTEGRACAO_SEM_GITHUB=1` é o fast-forward da worktree da `main`, só teste.
+
+O script pode `push --force-with-lease` somente em branch `fase/*`, depois do rebase. O hook continua barrando force na mão e aponta este script.
+
+**Exemplo:** duas solitárias acrescentam linhas diferentes no fim do `CHANGELOG`. A segunda integração fica com as duas. As duas editam o mesmo `.ts` → exit 4, `main` intacto.
+
+**Âncora:** `scripts/integrar-fase.sh` › `resolver_um`; `scripts/lib/integracao.sh` › `integracao_resolver_ledger`.
+
+**Rejeitado:** `merge=union`. Não distingue linha apagada de linha nova e estraga tabela.
+
+**Origem:** F-metodo-v6, ADR-002.
+
+## R-005 — Fila de dependência
+
+Item que depende de uma fase ainda não integrada não abre. `scripts/abrir-fase.sh --depende-de <id>` sai 2 se esse id não está no `CHANGELOG` da base. A fila é, nesta ordem de leitura: linha do `ROADMAP` com `depende de <id>`, seção `roadmap-add` dos fragmentos das fases ativas, e o corpo de issue aberta com a mesma frase. `scripts/fases-ativas.sh` imprime a fila. Id que já está no `CHANGELOG` não bloqueia.
+
+Quem abre a dependência leva a linha da dependente com `--enfileirar` (ou `scripts/enfileirar.sh --na <id> --linha '…'` se a fase já está aberta e o worktree está limpo). Worktree sujo: o script recusa; a linha fica na issue e no fragmento no fecho.
+
+**Exemplo:** F-020 diz `depende de F-012` e F-012 não está no `CHANGELOG`. F-020 não abre. Quando F-012 integra, a linha já está no `ROADMAP` e a próxima sessão pode abrir F-020.
+
+**Âncora:** `scripts/abrir-fase.sh` › `--depende-de`; `scripts/enfileirar.sh`.
+
+**Rejeitado:** abrir a dependente na mesma leva e "resolver a ordem no merge". O merge serial não cria o código que a outra fase precisa ler.
+
+**Origem:** F-metodo-v6, ADR-002.
+
+## R-006 — Canal com fases paralelas
+
+O contrato v1 não muda. A pasta do canal já é por id de fase (`~/.canal/<projeto>/F-012/…`), então duas fases não misturam pedido. Cada execução lê só a seção `## Bots` do `SETUP.md` do próprio worktree. O teto diário é do projeto: as fases dividem. Pedidos ao mesmo bot dentro de `agrupar_segundos` podem sair num POST só, com um ponteiro por fase — o JSON já é uma lista. Sem bot na spec, a fase paralela também é só code.
+
+**Exemplo:** F-010 e F-011 pedem `marketing` no mesmo minuto. Um POST, dois caminhos em `avisos[]`. As respostas voltam cada uma na pasta da própria fase.
+
+**Âncora:** `docs/reference/canal.md` › Árvore; `templates/spec-fase.md` › `## Bots`.
+
+**Rejeitado:** serializar bots porque as fases são paralelas. O canal já separa por id; serializar de novo só atrasaria.
+
+**Origem:** F-metodo-v6, emenda ADR-001.
+
+## Fluxo
+
+1. Planejar no checkout da `main`, com `scripts/fases-ativas.sh --fetch`.
+2. Solitária: gravar a spec no `SETUP.md`, sem commit. Paralela: `scripts/abrir-fase.sh` por fase. Não abrir pull request aqui.
+3. Executar no worktree (paralela) ou na branch da fase (solitária). Uma sessão por fase.
+4. Fechar: critérios, revisão de contexto fresco, docs. Paralela preenche o fragmento e esvazia o `SETUP.md`. Solitária edita os ledgers.
+5. `scripts/integrar-fase.sh --id <id>` no worktree da fase. Se sair 4 ou 5, parar e mostrar o stderr ao dono.
+6. No checkout da `main`, `git pull`. Worktree que sobrou: `git worktree remove <caminho>` a partir da `main`.
+
+## Validação e CI
+
+`scripts/validar.sh` é a validação do projeto. Neste template ele roda os testes dos hooks e destes scripts. Projeto derivado acrescenta typecheck, lint e teste da stack no mesmo arquivo. O workflow `.github/workflows/validar.yml` roda esse script em pull request e em push na `main`. Ele não mergeia e não serializa: a trava é o ref no git. Duas validações podem correr juntas; dois merges, não.
