@@ -68,6 +68,14 @@ espera 'git clean -n' 0 'clean --dry-run passa'
 espera 'git branch -d foo' 0 'branch -d (minúsculo, seguro) passa'
 espera 'git reset HEAD~1' 0 'reset sem --hard passa'
 
+# a rota do push forçado é o script de integração, não um force na mão
+aviso="$(printf '%s' '{"tool_input":{"command":"git push --force"}}' | bash "$HOOK" 2>&1 >/dev/null || true)"
+if ! printf '%s' "$aviso" | grep -q 'integrar-fase.sh'; then
+  echo "FALHOU: o bloqueio de push forçado não aponta scripts/integrar-fase.sh" >&2
+  printf '%s\n' "$aviso" >&2
+  falhou=1
+fi
+
 if [ "$falhou" -ne 0 ]; then
   exit 1
 fi
