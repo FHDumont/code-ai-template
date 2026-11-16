@@ -209,7 +209,7 @@ O dono entra numa sessão sem saber se ela acabou, o que falta e se a vez é del
 
 - **Estados:** `executando`, `esperando revisão`, `esperando <bot>`, `esperando agenda (<hora>)`, `pronta para integrar` (fase de produção parada antes do `/integrar-fase`, à espera do ok do dono), `integrada`, `bloqueada (<motivo>)`. No registro da fase o mesmo estado vira `status:` (`executando`, `pronta-para-integrar`, `integrando`); `integrando` é só a integração de verdade rodando.
 - **Quando o próximo é do dono**, a placa diz o comando ou a frase que ele manda, e onde. **Quando não é**, diz "você não precisa fazer nada".
-- **Gerenciador da leva:** termina o turno com uma tabela (fase, estado, próximo) e uma linha final `**Você:** <a ação, ou nada>`.
+- **Gerenciador da leva:** termina o turno com uma tabela `| Fase | Model/effort | Estado | Próximo |` (Model/effort é o que a sessão de fato roda, o passado no `start_session`, não só o sugerido na spec; vale também na solitária gerenciada) e uma linha final `**Você:** <a ação, ou nada>`.
 
 Exemplo — fase de produção que espera o dono:
 

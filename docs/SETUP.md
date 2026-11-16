@@ -24,6 +24,8 @@ O dono não precisa mais perguntar se o planejamento cogitou fases paralelas, e 
 4. **Texto alinhado:** `AGENTS.md` §O loop (a fronteira dura: o padrão vira o menu, e "executar aqui" é escolha explícita do dono), `CLAUDE.md` §Mecânica (o bullet do `/clear`), `docs/reference/integracao.md` R-001 (solitária pode ter sessão gerenciada) e o passo 3 do fluxo, `README.md` §loop (o `/clear` vira uma das opções).
 5. **Propagação.** Depois do merge, abrir uma issue por repo derivado: `FHDumont/amplug`, `FHDumont/vaulty`, `FHDumont/dumontech-videos`. Título `Atualizar método ao code-ai-template <sha> (corte anunciado, menu de execução)`, label `achado`. O corpo traz o que mudou, os arquivos pra portar e o SHA.
 
+6. **Tabela do gerenciador com 4ª coluna:** `| Fase | Model/effort | Estado | Próximo |`, o valor é o que a sessão de fato roda (o passado no `start_session`). Em `AGENTS.md` §Placa de estado e no passo 14 do `planejar-fase`; vale na solitária gerenciada.
+
 **NÃO entra:** mudar a regra de afinidade; trocar o model/effort da própria sessão; mexer no `abrir-fase.sh` (o prompt da solitária mora na skill); o item F-metodo-v7 do ROADMAP.
 
 ## Etapas
@@ -39,6 +41,7 @@ O dono não precisa mais perguntar se o planejamento cogitou fases paralelas, e 
 - O passo 13 lista as 4 opções, o filtro por modo, a pergunta de fecho e o aviso de modelo. O passo 14 cobre a solitária gerenciada.
 - `AGENTS.md`, `CLAUDE.md`, `integracao.md` e `README.md` não contradizem o menu (grep por "limpa o contexto" e "dono dá").
 - `scripts/validar.sh` verde.
+- `grep -n 'Model/effort' AGENTS.md .claude/skills/planejar-fase/SKILL.md` mostra a coluna nos dois pontos (placa de estado e passo 14).
 - As 3 issues abertas, com os links no resumo.
 
 Model/effort de execução: `claude-sonnet-5-5 · medium`
