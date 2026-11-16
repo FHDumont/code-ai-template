@@ -95,7 +95,7 @@ Os de `examples/` vêm **preenchidos** com um projeto-brinquedo coerente ("Recad
 3. **Configure o agente:** o `AGENTS.md` é o núcleo — use como está, ajuste só a seção de stack/comandos. A mecânica por ferramenta já vem pronta: `CLAUDE.md` (Claude Code) e `.cursor/rules/metodo.mdc` (Cursor).
 4. **Preencha o** `CONVENCOES.md` com os padrões de código/UI do seu projeto (use `examples/CONVENCOES.md` como molde). Sem convenções fortes ainda? Deixe mínimo e cresça depois.
 5. **Defina o ROADMAP:** preencha `docs/ROADMAP.md` com as fases de um MVP enxuto, 1 linha cada.
-6. **Rode o loop:** plan mode audita o código e grava a spec da fase em `docs/SETUP.md` → você aprova e limpa o contexto (`/clear` no Claude Code, New Chat no Cursor) → code mode executa, roda a revisão de fecho e atualiza os vivos → você aprova a fase → repete. No Claude Code, os rituais já vêm como skills: `/planejar-fase` e `/fechar-fase`. Se o planejamento cortar fases que não se tocam, cada uma ganha worktree e a integração entra uma por vez (`/integrar-fase`). Uma fase só, com nada no ar, não muda esse passo.
+6. **Rode o loop:** plan mode audita o código e grava a spec da fase em `docs/SETUP.md` → você aprova e escolhe como executar (aqui sem limpar, agente gerenciado ou à mão com `/clear` no Claude Code / New Chat no Cursor) → code mode executa, roda a revisão de fecho e atualiza os vivos → você aprova a fase → repete. No Claude Code, os rituais já vêm como skills: `/planejar-fase` e `/fechar-fase`. Se o planejamento cortar fases que não se tocam, cada uma ganha worktree e a integração entra uma por vez (`/integrar-fase`). Uma fase só, com nada no ar, não muda esse passo.
 7. **(Opcional) apague `examples/`** quando não precisar mais da referência.
 
 ### Exemplo: as primeiras interações
@@ -110,7 +110,7 @@ Estou começando um projeto novo. Projeto: ‹uma API self-hosted pra gerenciar 
 Entre em plan mode: primeiro me proponha as fases de um MVP enxuto (YAGNI), uma linha cada, pro ROADMAP. Quando eu aprovar, audite o repo e grave a spec só da primeira fase em docs/SETUP.md.
 ```
 
-**2) Limpe o contexto e execute.** Aprovada a spec, dê `/clear` (Claude Code) ou abra um New Chat (Cursor), e rode:
+**2) Execute.** Aprovada a spec, escolha no menu do planejamento (executar aqui, agente gerenciado ou fazer nada). Fazendo à mão, dê `/clear` (Claude Code) ou abra um New Chat (Cursor), e rode:
 
 ```
 Leia e execute a fase atual do docs/SETUP.md, seguindo o AGENTS.md.
@@ -121,7 +121,7 @@ O agente implementa, roda a **revisão de fecho** (subagente de contexto fresco)
 **Daí em diante**, cada fase é esse par curto — o contexto está nos docs, não no prompt:
 
 ```
-planeja a próxima fase     →  aprovo e /clear  →  executa a fase do SETUP
+planeja a próxima fase     →  aprovo e escolho no menu (ou /clear)  →  executa a fase do SETUP
 ```
 
 ---
