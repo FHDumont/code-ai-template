@@ -30,13 +30,13 @@ paralela
 
 ## Reivindica
 
-> Só na paralela. Caminhos que esta fase pode editar. Diretório leva barra no fim. Os ledgers não entram: a integração é dona deles (R-003).
+> Só na paralela. Caminhos que esta fase pode editar (vão pro `--arquivos` do `scripts/abrir-fase.sh`). Diretório leva barra no fim. Os ledgers não entram: a integração é dona deles (R-003).
 
 - src/...
 
 ## Depende de
 
-> Omita se não houver. Id que ainda não está no CHANGELOG não abre: fica na fila (R-005).
+> Omita se não houver. Id que ainda não está no `CHANGELOG` não abre: fica na fila (R-005).
 
 - (nenhuma)
 
