@@ -45,7 +45,8 @@ comeca_com() {
   printf '%s' "$1" | grep -Eq "^$2([[:space:]]|\$)"
 }
 
-# A cláusula contém o token $2 como palavra inteira.
+# A cláusula contém o token $2 como palavra inteira. Só os exemplos comentados a usam.
+# shellcheck disable=SC2329
 tem_token() {
   printf '%s' "$1" | grep -Eq -- "(^|[[:space:]])$2([[:space:]]|\$)"
 }
@@ -122,7 +123,8 @@ while IFS= read -r seg; do
   # fi
 
   # (2) Script de ambiente local — "o ambiente é do dono" (AGENTS.md §Stack e comandos).
-  # ALVO_LAB="$(printf '%s' "$seg" | sed -E 's/^(bash|sh|zsh)[[:space:]]+//')"
+  # Variável de ambiente na frente (`X=1 ./scripts/lab.sh up`) e o interpretador não mudam o alvo.
+  # ALVO_LAB="$(printf '%s' "$seg" | sed -E 's/^([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*[[:space:]]+)*//; s/^(bash|sh|zsh)[[:space:]]+//')"
   # if printf '%s' "$ALVO_LAB" | grep -Eq '^[^[:space:]]*lab\.sh([[:space:]]|$)' \
   #   && tem_token "$ALVO_LAB" '(up|down|reset)'; then
   #   block "\`lab.sh\` — o ambiente local é do dono (AGENTS.md §Stack e comandos)." "peça ao dono subir, derrubar ou resetar o ambiente. Pra auditar o código bastam leitura, grep e typecheck."
