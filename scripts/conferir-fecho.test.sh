@@ -28,7 +28,7 @@ cenario; no_repo bash "$aqui/fechar-pr.sh" 7 > /dev/null; reprova "a issue abert
 cenario; no_repo bash "$aqui/fechar-pr.sh" 7 --issue 9 > /dev/null
 no_repo git worktree add -q --detach "$FECHO_WT_TRILHA" main; reprova "o worktree da trilha" "sobrou o worktree"
 # Sem a variável, o worktree de trilha não se olha.
-[ "$(FECHO_WT_TRILHA= no_repo bash "$aqui/conferir-fecho.sh" 7 --issue 9)" = ok ] || erro "conferir olhou o worktree de trilha sem FECHO_WT_TRILHA"
+[ "$(FECHO_WT_TRILHA='' no_repo bash "$aqui/conferir-fecho.sh" 7 --issue 9)" = ok ] || erro "conferir olhou o worktree de trilha sem FECHO_WT_TRILHA"
 
 # Fase paralela em curso (branch `fase/*` com registro) não é sobra; outro branch é.
 cenario; no_repo bash "$aqui/fechar-pr.sh" 7 --issue 9 > /dev/null
