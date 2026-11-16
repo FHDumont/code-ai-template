@@ -74,6 +74,25 @@ else
   cat "$out" >&2
 fi
 
+# --- acrescentar: o ledger em lista que termina com linha em branco (o CHANGELOG real deste template) ---
+
+printf '%s\n' '# CHANGELOG' '' '- **F-001** — base — 2026-01-01' '' > "$out"
+_integracao_acrescentar_se_falta "$out" '- **F-900** — a fase — 2026-11-15'
+if [[ "$(cat "$out")" == "$(printf '%s\n' '# CHANGELOG' '' '- **F-001** — base — 2026-01-01' '- **F-900** — a fase — 2026-11-15')" ]]; then
+  teste_ok "item de lista entra colado no anterior, mesmo com linha em branco no fim do ledger"
+else
+  teste_falha "item de lista ficou separado por linha em branco"
+  cat -e "$out" >&2
+fi
+printf '%s\n' '# CHANGELOG' '' > "$out"
+_integracao_acrescentar_se_falta "$out" '- **F-900** — a fase — 2026-11-15'
+if [[ "$(cat "$out")" == "$(printf '%s\n' '# CHANGELOG' '' '- **F-900** — a fase — 2026-11-15')" ]]; then
+  teste_ok "primeiro item da lista mantém a linha em branco depois do título"
+else
+  teste_falha "primeiro item da lista colou no título"
+  cat -e "$out" >&2
+fi
+
 # --- resolver: a fase tira a si do ROADMAP real enquanto a main acrescenta outra ---
 
 cp "${RAIZ}/docs/ROADMAP.md" "$base"

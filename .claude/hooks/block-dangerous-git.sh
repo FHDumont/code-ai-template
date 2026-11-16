@@ -166,7 +166,7 @@ while IFS= read -r seg; do
 
   # git push --force / -f / --force-with-lease
   if has_subcmd "$seg" "push" && has_flag "$seg" '(^|[[:space:]])(--force(-with-lease)?|-f)([[:space:]]|$)'; then
-    block "push forçado (reescreve história publicada)." "a branch da fase se atualiza com o main por \`scripts/integrar-fase.sh --id F-xxx\` (o único \`--force-with-lease\`, só em \`fase/*\` depois do rebase, R-063); fora disso, $DESTRUTIVA"
+    block "push forçado (reescreve história publicada)." "a branch da fase se atualiza com o main por \`scripts/integrar-fase.sh --id F-xxx\` (o único \`--force-with-lease\`, só em \`fase/*\` depois do rebase, R-004); fora disso, $DESTRUTIVA"
   fi
 
   # git reset --hard
@@ -229,7 +229,7 @@ while IFS= read -r seg; do
       for d in "$ALVO" "$REPO_DIR" "$SESSAO_DIR" "$CLAUDE_PROJECT_DIR"; do
         [ -n "$d" ] || continue
         if [ "$(git -C "$d" branch --show-current 2>/dev/null)" = "main" ]; then
-          block "git commit com alvo que o hook não resolve (variável, \$(…), caminho com espaço, \`cd\` em subshell ou pipe) e o main ao alcance ($d)." "use o caminho literal do worktree, sem subshell nem pipe: \`cd /caminho/do/worktree && git commit …\` ou \`git -C /caminho/do/worktree commit …\` (F-110)."
+          block "git commit com alvo que o hook não resolve (variável, \$(…), caminho com espaço, \`cd\` em subshell ou pipe) e o main ao alcance ($d)." "use o caminho literal do worktree, sem subshell nem pipe: \`cd /caminho/do/worktree && git commit …\` ou \`git -C /caminho/do/worktree commit …\`."
         fi
       done
     fi
