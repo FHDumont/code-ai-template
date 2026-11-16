@@ -8,6 +8,8 @@ para: marketing
 # prazo: 2026-11-14T18:00
 ---
 
-## Pedido
+# <título do pedido>
 
-<!-- O que o bot precisa responder. Um pedido, um bot, um arquivo. -->
+<!-- O que o bot precisa responder. Um pedido, um bot, um arquivo.
+     Nome: AAAA-MM-DD-HHMM-<assunto>-<tipo>.md em <unidade>/<bot>/pedidos/.
+     Diga onde a resposta vai: <unidade>/<bot>/respostas/<mesmo nome>. -->

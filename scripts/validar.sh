@@ -25,6 +25,7 @@ testes="
 .claude/hooks/block-comandos-do-dono.test.sh
 scripts/fechar-pr.test.sh
 scripts/conferir-fecho.test.sh
+scripts/canal-avisar.test.sh
 scripts/fases-ativas.test.sh
 scripts/abrir-fase.test.sh
 scripts/integrar-fase.test.sh

@@ -11,7 +11,19 @@ bots:
     env: ~/.canal/segredos/marketing.env
     tipos: [qa, duvida]
     para_que: QA de vídeo e roteiro
+    proibido:
+      - escrever fora de respostas/
+      - escrever em pedidos/
+      - chamar o webhook
+      - copiar chave, URL de webhook, senha ou segredo para resposta, log ou issue
+      - usar serviço pago ou gastar sem aprovação do dono
+      - inventar dado, número ou depoimento
   infraestrutura:
     env: ~/.canal/segredos/infraestrutura.env
     tipos: [duvida]
     para_que: revisar deploy e DNS
+    proibido:
+      - escrever fora de respostas/
+      - chamar o webhook
+      - copiar chave, URL de webhook, senha ou segredo para resposta, log ou issue
+      - mudar produção sem aprovação do dono
