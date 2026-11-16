@@ -36,22 +36,48 @@ espera 'echo git add -A' 0 'echo que só cita o literal passa'
 
 # comando composto
 espera 'echo ok && git add -A' 2 'git add -A depois de && é barrado'
+espera 'git status; git add -A' 2 'git add -A depois de ; é barrado'
 espera 'cd web && git add src/foo.ts' 0 'composto sem comando barrado passa'
 
 # separador dentro de aspas não abre cláusula nova
+espera "cat > t.sh <<'EOF'" 0 'heredoc de arquivo passa'
+espera "printf '%s' 'git status; git add -A' > /tmp/t" 0 'literal citado entre aspas não abre cláusula'
 espera 'grep -rn "git add -A" docs/' 0 'grep pelo literal entre aspas passa'
 
 # corpo de heredoc é dado, não comando
 espera 'cat > /tmp/x.md <<EOF
 git add -A
 EOF' 0 'git add -A dentro do corpo de heredoc passa'
+espera 'cat > /tmp/x.md <<-EOF
+	git add -A
+	EOF' 0 'heredoc <<- indentado passa'
 espera 'echo oi
 git add -A' 2 'script multilinha de verdade continua barrado'
+espera 'cat > /tmp/x.md <<EOF
+texto
+EOF
+git add -A' 2 'comando depois do heredoc fechado continua barrado'
+
+# só conta como heredoc o que FECHA, e <<< / # / << aritmético não abrem
+espera 'echo "escreva <<EOF assim"
+git add -A' 2 'marca citada dentro de string não engole o resto'
+# shellcheck disable=SC2016 # o comando é texto pro hook, não pra este shell
+espera 'X=$((1 << N))
+git add -A' 2 'shift aritmético não abre heredoc'
+espera '# usa <<EOF
+git add -A' 2 'comentário não abre heredoc'
 espera 'grep foo <<<"bar"
 git add -A' 2 'here-string não abre heredoc'
 espera 'cat > /tmp/x <<EOF
 texto
 git add -A' 2 'marca que nunca fecha não engole o resto'
+espera "cat > /tmp/x <<'END-OF'
+texto
+END-OF
+git add -A" 2 'marca com hífen fecha, e o comando depois é barrado'
+espera "cat > /tmp/x <<'END-OF'
+git add -A
+END-OF" 0 'marca com hífen: o corpo continua sendo dado'
 
 # exemplos desligados — ficam inertes até serem descomentados no hook
 espera 'pnpm format' 0 'exemplo (1) formatador está comentado'

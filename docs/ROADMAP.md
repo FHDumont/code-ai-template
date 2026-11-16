@@ -6,6 +6,7 @@
 
 ## Atual
 
+- **F-metodo-v8** — melhorias genéricas de método vindas do Amplug (observador de atrito, placa de estado, canal v1 em script, paralelas robustas, fecho comum, trilha fora do ciclo) — fecha #12, #13, #14, #15 e #16.
 
 ## Próximas
 
