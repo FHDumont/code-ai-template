@@ -6,7 +6,7 @@
 
 A fase é **solitária** ou **paralela**.
 
-Solitária: nenhuma outra fase está em execução e o planejamento abre uma só. A spec fica no `docs/SETUP.md` do checkout, sem commit, e a execução segue o loop de sempre. Não se chama `scripts/abrir-fase.sh`.
+Solitária: nenhuma outra fase está em execução e o planejamento abre uma só. A spec fica no `docs/SETUP.md` do checkout, sem commit, e a execução segue o loop de sempre: no menu do fim do planejamento, o dono escolhe executar na mesma sessão, abrir um agente (a sessão que planejou vira gerenciadora, como na leva) ou fazer nada e abrir à mão. Não se chama `scripts/abrir-fase.sh`.
 
 Paralela: o planejamento abre mais de uma, ou abre uma enquanto outra paralela já corre, e `scripts/fases-ativas.sh --sobrepor` sai 0 para os caminhos dela. Cada uma nasce com `scripts/abrir-fase.sh`: branch `fase/<id>-<slug>`, worktree em `<diretório-pai>/<repo>-fases/<id>`, primeiro commit `docs: abre <id>`, push, sem pull request. A execução é uma sessão nova por fase, **aberta no checkout principal** (o trust é o dele, e o fecho tira o worktree sem matar a sessão), que trabalha no worktree por caminho absoluto; a spec é o `docs/SETUP.md` de lá. Quem planejou a leva inicia as sessões e as gerencia até o resumo do fim (`AGENTS.md` §O loop).
 
@@ -116,7 +116,7 @@ Só para projeto em que o merge no `main` publica imagem e um workflow faz o dep
 
 1. Planejar no checkout da `main`, com `scripts/fases-ativas.sh --fetch`.
 2. Solitária: gravar a spec no `SETUP.md`, sem commit. Paralela: `scripts/abrir-fase.sh` por fase. Não abrir pull request aqui.
-3. Executar no worktree, da sessão aberta no checkout principal (paralela), ou na branch da fase neste checkout (solitária). Uma sessão por fase.
+3. (Menu do fim do planejamento: executar aqui, abrir agente, paralelo ou nada; e fecho liberado ou não.) Executar no worktree, da sessão aberta no checkout principal (paralela), ou na branch da fase neste checkout (solitária). Uma sessão por fase.
 4. Fechar: critérios, revisão de contexto fresco, docs. Paralela preenche o fragmento e esvazia o `SETUP.md`. Solitária edita os ledgers.
 5. Em projeto com deploy no merge, a fase de produção para aqui e espera o ok do dono, com o que muda, o risco e o que testar (`AGENTS.md` §Git). Com o ok, ou nas demais: `scripts/integrar-fase.sh --id <id> [--issue N]` (paralela: `(cd <worktree> && …)`, da sessão no checkout principal). Se sair 4 ou 5, parar e mostrar o stderr ao dono.
 6. O script já roda o `scripts/conferir-fecho.sh <pr> [--issue N]` no fim, do checkout principal: `ok`, e `git ls-remote origin refs/integracao/lock` volta vazio.
