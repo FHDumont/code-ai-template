@@ -6,3 +6,4 @@
 
 | Regra | Fases | Destino |
 | ----- | ----- | ------- |
+| Corte não anunciado: o dono precisa perguntar se o planejamento cogitou paralelas | F-metodo-v9 | skill (`/planejar-fase` passo 7, nesta fase) |
