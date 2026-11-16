@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Lista fases em execução e a fila do que depende delas.
+# Roda no bash 3.2 (R-002; F-metodo-v8, Amplug F-098): o que era mapa associativo é lista em texto.
 # Uso:
 #   scripts/fases-ativas.sh [--fetch] [--sobrepor caminho...]
 # --fetch atualiza os refs remotos (se falhar, segue com o que já está local).
@@ -51,15 +52,15 @@ fi
 declare -a fase_ids=() fase_modos=() fase_situacoes=() fase_branches=() fase_worktrees=()
 declare -a fase_arquivos=() fase_areas=() fase_bots=() fase_depende=() fase_escopos=()
 declare -a fila=() fila_roadmap=() fila_fragmento=() fila_issue=()
-declare -A fila_crua=()
+fila_crua=$'\n'
 
 # A mesma linha não entra duas vezes. A ordem de impressão é outra função.
 guardar_fila() {
   local crua="$1" item="$2" balde="$3"
-  if [[ -n "${fila_crua[$crua]+x}" ]]; then
+  if [[ "$fila_crua" == *$'\n'"$crua"$'\n'* ]]; then
     return 0
   fi
-  fila_crua["$crua"]=1
+  fila_crua="${fila_crua}${crua}"$'\n'
   case "$balde" in
     roadmap) fila_roadmap+=("$item") ;;
     fragmento) fila_fragmento+=("$item") ;;
@@ -69,11 +70,12 @@ guardar_fila() {
 
 registrar() {
   local id="$1"
-  local i
-  for i in "${!fase_ids[@]}"; do
+  local i=0
+  while [[ $i -lt ${#fase_ids[@]} ]]; do
     if [[ "${fase_ids[$i]}" == "$id" ]]; then
       return 1
     fi
+    i=$((i + 1))
   done
   fase_ids+=("$id")
   fase_modos+=("$2")
@@ -147,13 +149,13 @@ ler_fragmento_fila() {
         continue
       fi
       [[ "$secao" == "roadmap-add" ]] || continue
-      [[ -z "$linha" || "$linha" =~ ^# || "$linha" =~ ^\<\!-- ]] && continue
+      [[ -z "$linha" || "$linha" == '#'* || "$linha" == '<!--'* ]] && continue
       guardar_fila "$linha" "${linha} — na ${origem}, ainda fora do main" fragmento
     done <<< "$conteudo"
   done <<< "$lista"
 }
 
-declare -A branch_vista=()
+branch_vista=$'\n'
 
 while IFS= read -r bloco; do
   [[ -n "$bloco" ]] || continue
@@ -166,7 +168,7 @@ while IFS= read -r bloco; do
     done
   fi
   if [[ "$br" == fase/* ]]; then
-    branch_vista["$br"]=1
+    branch_vista="${branch_vista}${br}"$'\n'
   fi
 done < <(git worktree list --porcelain | awk '
   /^worktree / { wt=$0; sub(/^worktree /, "", wt) }
@@ -187,10 +189,10 @@ varrer_refs() {
     curto="${curto#origin/}"
     [[ "$curto" == fase/* ]] || continue
     ler_fragmento_fila "$ref" "$curto"
-    if [[ -n "${branch_vista[$curto]+x}" ]]; then
+    if [[ "$branch_vista" == *$'\n'"$curto"$'\n'* ]]; then
       continue
     fi
-    branch_vista["$curto"]=1
+    branch_vista="${branch_vista}${curto}"$'\n'
     ler_claim_de_ref "$ref" "$curto"
     if ! git ls-tree -r --name-only "$ref" -- docs/fases-ativas 2>/dev/null | grep -q '^docs/fases-ativas/F-'; then
       if ! git merge-base --is-ancestor "$ref" "$base_ref" 2>/dev/null; then
@@ -317,14 +319,15 @@ if [[ $sobrepor -eq 1 ]]; then
   i=0
   while [[ $i -lt ${#fase_ids[@]} ]]; do
     reiv="${fase_arquivos[$i]}"
-    for caminho in "${caminhos[@]}"; do
+    for caminho in ${caminhos[@]+"${caminhos[@]}"}; do
       if [[ "$reiv" == "repo-inteiro" ]]; then
         echo "sobrepõe ${fase_ids[$i]} (repo inteiro): ${caminho}" >&2
         cruzou=1
         continue
       fi
+      partes=()
       IFS=',' read -ra partes <<< "$reiv"
-      for parte in "${partes[@]}"; do
+      for parte in ${partes[@]+"${partes[@]}"}; do
         parte="${parte#"${parte%%[![:space:]]*}"}"
         parte="${parte%"${parte##*[![:space:]]}"}"
         [[ -n "$parte" ]] || continue
