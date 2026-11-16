@@ -94,6 +94,18 @@ O contrato v1 não muda. A pasta do canal já é por id de fase (`~/.canal/<proj
 
 **Origem:** F-metodo-v6, emenda ADR-001.
 
+## R-007 — Um restart de produção por leva (add-on opcional)
+
+Só para projeto em que o merge no `main` publica imagem e um workflow faz o deploy sozinho. Leva com fase de produção (a que muda o que vai pra imagem ou pro banco) segura o deploy automático na abertura e o solta no fim, com um restart só. `scripts/deploy-segurado.sh segurar` grava a hora na variável `DEPLOY_SEGURADO` do repositório; com ela preenchida, o workflow de deploy automático do projeto termina verde sem recriar nada, e o build segue publicando. Com a última fase no `main`, `soltar` espera os builds e os deploys automáticos em andamento, apaga a variável e dispara o deploy manual se houve imagem desde a hora gravada; sem imagem nova, não reinicia nada. `scripts/fases-ativas.sh` e `scripts/conferir-fecho.sh` avisam quando a variável segue preenchida e não há mais leva. Os nomes dos workflows e o prefixo dos jobs de build são do projeto (variáveis no cabeçalho do script). Projeto sem deploy automático ignora esta regra e o script.
+
+**Exemplo:** F-020 muda o backend e F-021 muda a interface. A sessão da leva roda `segurar` antes do primeiro `abrir-fase.sh`. Os dois merges publicam imagem e o deploy não roda. Com F-021 no `main`, `soltar` dispara um deploy manual: um restart, não dois.
+
+**Âncora:** `scripts/deploy-segurado.sh`; `scripts/fases-ativas.sh` › alarme do esquecido; `/planejar-fase` (abertura e fecho da leva).
+
+**Rejeitado:** pausar o deploy desligando o runner ou o workflow (some o deploy sem ninguém notar e não deixa rastro da hora); segurar na fase solitária (um merge, um deploy, não há o que juntar).
+
+**Origem:** F-metodo-v8, portado do Amplug F-116.
+
 ## Fluxo
 
 1. Planejar no checkout da `main`, com `scripts/fases-ativas.sh --fetch`.

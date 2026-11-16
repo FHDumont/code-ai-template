@@ -314,6 +314,19 @@ else
   done
 fi
 
+# Alarme do esquecido (R-007): deploy segurado e ninguém mais na leva. Só com gh e o remoto do GitHub
+# (ou FASES_ATIVAS_GH=1, o teste); qualquer falha em ler a variável cala o aviso, nunca quebra a listagem.
+if [[ ${#fase_ids[@]} -eq 0 && ${#fila[@]} -eq 0 ]]; then
+  url_origem="$(git remote get-url origin 2>/dev/null || true)"
+  if [[ "${FASES_ATIVAS_GH:-}" == 1 || "$url_origem" == *github.com* ]] && command -v gh >/dev/null 2>&1; then
+    segurado_desde="$(GH_PROMPT_DISABLED=1 gh variable get DEPLOY_SEGURADO 2>/dev/null || true)"
+    if [[ -n "$segurado_desde" ]]; then
+      echo
+      echo "aviso: deploy segurado sem leva (desde ${segurado_desde}): rode scripts/deploy-segurado.sh soltar"
+    fi
+  fi
+fi
+
 if [[ $sobrepor -eq 1 ]]; then
   cruzou=0
   i=0

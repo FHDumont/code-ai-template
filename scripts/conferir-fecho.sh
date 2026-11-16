@@ -68,6 +68,13 @@ if [ -n "$wt" ]; then
   fi
 fi
 
+# Alarme do esquecido (R-007): a última fase da leva saiu e o deploy segue segurado. É aviso no stderr, não
+# pendência: o `ok` continua sendo a resposta do fecho. O gh ou a variável ausente calam.
+if [ -n "$(GH_PROMPT_DISABLED=1 gh variable get DEPLOY_SEGURADO 2> /dev/null || true)" ]; then
+  aviso=$(FASES_ATIVAS_GH=1 bash "$(dirname "${BASH_SOURCE[0]}")/fases-ativas.sh" 2> /dev/null | grep '^aviso: deploy segurado sem leva' || true)
+  [ -z "$aviso" ] || echo "$aviso" >&2
+fi
+
 if [ ${#pendencias[@]} -eq 0 ]; then echo ok; exit 0; fi
 printf 'pendente: %s\n' "${pendencias[@]}"
 exit 1

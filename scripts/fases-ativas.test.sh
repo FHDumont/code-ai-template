@@ -141,6 +141,44 @@ else
   teste_falha "ordem da fila: roadmap=${pos_road} fragmento=${pos_frag} issue=${pos_issue}"
 fi
 
+# R-007: deploy segurado sem leva avisa; com leva (ou livre) não. O gh falso só sabe a variável e as issues.
+mkdir -p "${TMP}/gh-bin"
+cat > "${TMP}/gh-bin/gh" <<'F'
+#!/usr/bin/env bash
+case "$1 ${2:-}" in
+  "variable get") [ -f "${GH_VAR:?}" ] && cat "$GH_VAR" || exit 1 ;;
+  "issue list") echo '[]' ;;
+  *) exit 1 ;;
+esac
+F
+chmod +x "${TMP}/gh-bin/gh"
+limpo="${TMP}/limpo"
+teste_bare "${TMP}/bare2.git" "$limpo"
+# Sem fila: tira a dependência pendente do roadmap do repositório descartável.
+sed -i.bak 's/ — depende de F-099//' "${limpo}/docs/ROADMAP.md"
+echo 2026-11-15T10:00:00Z > "${TMP}/var"
+saida="$(cd "$limpo" && FASES_ATIVAS_GH=1 GH_VAR="${TMP}/var" PATH="${TMP}/gh-bin:$PATH" bash "${AQUI}/fases-ativas.sh")"
+if [[ "$saida" == *'deploy segurado sem leva'* && "$saida" == *'deploy-segurado.sh soltar'* ]]; then
+  teste_ok "deploy segurado sem leva avisa"
+else
+  teste_falha "faltou o aviso de deploy segurado sem leva"
+fi
+rm -f "${TMP}/var"
+saida="$(cd "$limpo" && FASES_ATIVAS_GH=1 GH_VAR="${TMP}/var" PATH="${TMP}/gh-bin:$PATH" bash "${AQUI}/fases-ativas.sh")"
+if [[ "$saida" != *'deploy segurado'* ]]; then
+  teste_ok "deploy livre não avisa"
+else
+  teste_falha "avisou com o deploy livre"
+fi
+echo 2026-11-15T10:00:00Z > "${TMP}/var"
+abrir_na_mao F-020 gama 'src/gama/'
+saida="$(cd "$clone" && FASES_ATIVAS_GH=1 GH_VAR="${TMP}/var" PATH="${TMP}/gh-bin:$PATH" bash "${AQUI}/fases-ativas.sh")"
+if [[ "$saida" != *'deploy segurado sem leva'* ]]; then
+  teste_ok "deploy segurado com fase ativa não avisa"
+else
+  teste_falha "avisou com fase ativa"
+fi
+
 if [[ "$teste_falhou" -ne 0 ]]; then
   echo "fases-ativas.test.sh falhou" >&2
   exit 1
