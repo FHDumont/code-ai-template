@@ -29,7 +29,7 @@ Contrato do canal: docs/reference/canal.md.
 
 <!--
 Um bot por linha, nesta forma. Vazio, ou só (nenhum), = modo só code.
-- `<slug>: <modo>[, <modo>] — <para quê>`
+- `<slug>`: <modo>[, <modo>] — <para quê>
 Modos (pode mais de um): planejamento | codificação | disponível-para-dúvidas
 O slug é minúsculo, [a-z0-9-], igual à chave em bots.yaml e à pasta do canal.
 Etiqueta opcional, uma por bot, só para filtrar: bot:<slug>. A seção acima é a fonte; a etiqueta não a substitui.

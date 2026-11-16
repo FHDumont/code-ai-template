@@ -42,9 +42,10 @@ CONTEXT.md                 linguagem ubíqua: 1 termo por conceito (preencha; cr
 │                          revisor-fecho.md — a revisão de fecho de contexto fresco, com o checklist da casa
 ├─ hooks/                  block-dangerous-git.sh — git destrutivo e commit no main viram erro (+ .test.sh)
 │                          block-comandos-do-dono.sh — git add cego (+ exemplos comentados)
-└─ settings.json           registra os hooks como PreToolUse/Bash
+└─ settings.json           registra os hooks como PreToolUse/Bash e as permissões dos scripts do método
 
-scripts/                   abrir, listar e integrar fases (a validação é scripts/validar.sh)
+scripts/                   abrir, listar e integrar fases; o fecho comum (fechar-pr, conferir-fecho); o aviso do canal
+                           (canal-avisar) e o deploy segurado, opcionais; a validação é scripts/validar.sh (bash 3.2)
 docs/                      ← só arquivos VIVOS na raiz (estado atual)
 ├─ ROADMAP.md              fases futuras + a atual; 1 linha por fase
 ├─ CHANGELOG.md            1 linha por fase entregue (ledger, append-only)

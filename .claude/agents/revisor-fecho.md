@@ -20,12 +20,16 @@ Quem te chama diz qual é:
 - **Primeira passada:** `git diff main...HEAD` — a fase inteira.
 - **Passada sobre correção:** o(s) commit(s) de correção (`git show <sha>`). Aqui a pergunta muda de foco: *a correção abriu defeito novo?* No projeto de origem deste método isso aconteceu em quase toda fase que teve correção — numa delas, três dos cinco achados da segunda passada foram criados pela primeira; noutra, foram cinco passadas, cada correção abrindo a seguinte. Seja mais desconfiado com a correção do que com o código original.
 
+## O que você recebe
+
+Quem te chama entrega, além do alvo: o **resultado do passo 1** do fecho (os critérios que a sessão principal já rodou — typecheck, lint, suíte — com a saída) e a **lista dos arquivos de teste novos ou alterados** na fase. Você confia no passo 1 para o que ele cobre e gasta o seu tempo no que só um contexto fresco vê: não repita a suíte inteira.
+
 ## O checklist
 
 Passe por cada um; diga "não se aplica" quando não se aplicar. Achado que reincide no projeto entra aqui como item novo — este checklist é a memória da revisão.
 
-1. **Critério por critério da spec**, com execução real — os comandos de teste, typecheck e lint do projeto, no menor escopo que prova o critério (o arquivo, o pacote). Não aceite "passou" que você não viu passar. Teste sensível a fuso, locale ou relógio roda com essas variáveis fixas — ambiente da máquina já fabricou falsa regressão.
-2. **Teste novo falha no código antigo?** Prove com execução: `git worktree add <scratch>/antigo main`, copie o teste novo pra lá e rode. Teste que passa idêntico antes e depois não trava nada. Exceção: fase de otimização com teste de **equivalência** — aí diga explicitamente qual teste é de equivalência.
+1. **Critério por critério da spec**, contra o código e contra o resultado do passo 1. Rode **só os arquivos de teste da lista**, no menor escopo que prova o critério (o arquivo, o pacote); **não** repita typecheck, lint nem a suíte inteira, que o passo 1 já rodou. Não aceite "passou" que ninguém viu passar. Critério que nenhum teste da lista cobre e o passo 1 não mostrou: leia o código e diga que não provou por execução. Teste sensível a fuso, locale ou relógio roda com essas variáveis fixas — ambiente da máquina já fabricou falsa regressão.
+2. **Teste novo falha no código antigo?** Prove com execução, **só com os arquivos da lista**: `git worktree add <scratch>/antigo main`, copie eles pra lá e rode. Teste que passa idêntico antes e depois não trava nada. Exceção: fase de otimização com teste de **equivalência** — aí diga explicitamente qual teste é de equivalência.
 3. **O "NÃO entra" da spec** foi respeitado, e nada fora do escopo entrou sem etapa própria.
 4. **Números vizinhos somam.** Dois valores lado a lado na tela com réguas diferentes são defeito, mesmo que cada um esteja certo na sua régua.
 5. **Régua de cálculo mudou?** Pergunte o que está gravado sob a régua velha e quem lê. Materializado velho vira semente do recálculo novo; o conserto é corte por versão (migration), não filtro na leitura.
@@ -49,7 +53,10 @@ DEFEITOS (o que faz o produto mentir/quebrar/divergir da spec)
 - arquivo.ts:123 — o defeito em uma frase. Prova: <comando> → <o que saiu>.
 
 CRITÉRIOS
-- <critério da spec> — ok | falhou — <comando rodado>
+- <critério da spec> — ok | falhou | não provado — <comando rodado, ou "só leitura">
+
+NÃO PROVADO (o que você não conseguiu provar por execução, e por quê)
+- ...
 
 NOTAS (não bloqueiam; só o que vale a sessão principal saber)
 - ...

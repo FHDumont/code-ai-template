@@ -1,6 +1,6 @@
 # Fragmento de fase — modelo
 
-> `docs/changes/<id>.md`, preenchido no fecho da fase paralela. A integração lê as seções e apaga o arquivo. Uma linha por item. Seção vazia fica vazia. Sem linha em `changelog`, a integração recusa.
+> `docs/changes/<id>.md`, preenchido no fecho da fase **paralela** (R-003). A integração (`scripts/integrar-fase.sh`) aplica cada seção no ledger dela e apaga o arquivo. Uma linha por item, no formato do ledger de destino: o do `CHANGELOG`, do `ROADMAP` e do débito do projeto (item de lista `- **F-xxx** — …` neste template; parágrafo `**F-xxx** — …` também é aceito, e a integração põe a linha em branco), item `- F-xxx — …` no `SETUP-HISTORICO`, linha de tabela no `DECISOES` (depois de `secao: <nome da seção>`). Seção vazia fica vazia. Sem linha em `changelog`, a integração sai 6. A fase solitária não tem fragmento: edita os ledgers na branch.
 
 ```
 # F-012

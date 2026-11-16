@@ -9,3 +9,5 @@ node_modules/
 .DS_Store
 # investigações/spikes efêmeros e planos de rascunho da ferramenta (não versionar)
 docs/scratch/
+# allowlist de permissões pessoal do Claude Code (não é config de projeto)
+.claude/settings.local.json
