@@ -6,7 +6,6 @@
 
 ## Atual
 
-- **F-metodo-v9** — corte anunciado (nunca perguntado) e menu de execução no fim do planejamento (aqui / agente gerenciado / paralelo / manual, fecho liberado ou não) — fecha o `/clear` como único caminho da solitária.
 
 ## Próximas
 
