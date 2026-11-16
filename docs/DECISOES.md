@@ -17,5 +17,6 @@
 | --- | ------ | ------ |
 | ADR-001 | Canal de bots como add-on opcional do template | accepted |
 | ADR-002 | Fases paralelas com integração serial | accepted |
+| ADR-003 | Fecho comum por script e trilha fora do ciclo como add-on | accepted |
 
 

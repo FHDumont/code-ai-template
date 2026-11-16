@@ -6,9 +6,8 @@
 
 ## Atual
 
-- **F-metodo-v8** — melhorias genéricas de método vindas do Amplug (observador de atrito, placa de estado, canal v1 em script, paralelas robustas, fecho comum, trilha fora do ciclo) — fecha #12, #13, #14, #15 e #16.
 
 ## Próximas
 
-- **F-metodo-v7** — scripts do canal (`canal-avisar` e o disparador: espera no shell, aviso só com ponteiro, agrupamento e teto diário) — fecha em código o contrato v1 de `docs/reference/canal.md`, sem mudar o contrato.
+- **F-metodo-v7** — o disparador de uma trilha fora do ciclo e a espera da resposta no shell (o `canal-avisar` entrou na F-metodo-v8) — fecha em código o que falta do contrato v1 de `docs/reference/canal.md`, sem mudar o contrato.
 
