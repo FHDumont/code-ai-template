@@ -70,7 +70,7 @@ else
   printf '%s\n' "$out" >&2; cat "${TMP}/abrir.err" >&2 || true
 fi
 if [[ "$out" == *"Termine todo turno com a placa de estado (\`AGENTS.md\` §Placa de estado)"* ]]; then
-  teste_ok "o prompt da fase pede a placa de estado (F-120)"
+  teste_ok "o prompt da fase pede a placa de estado"
 else
   teste_falha "o prompt da fase não pede a placa de estado"
 fi

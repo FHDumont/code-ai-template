@@ -221,7 +221,7 @@ integracao_enfileirar_no_fragmento() {
 
 # Acrescenta a linha no fim do ledger, se ainda não estiver lá. Parágrafo ganha a linha em branco antes.
 _integracao_acrescentar_se_falta() {
-  local arquivo="$1" linha="$2" ult
+  local arquivo="$1" linha="$2" ult tmp
   [[ -f "$arquivo" ]] || { echo "arquivo ausente: ${arquivo}" >&2; return 1; }
   if grep -Fxq -- "$linha" "$arquivo"; then
     return 0
@@ -229,6 +229,18 @@ _integracao_acrescentar_se_falta() {
   if [[ -s "$arquivo" ]]; then
     if [[ "$(tail -c 1 "$arquivo")" != "" ]]; then
       printf '\n' >> "$arquivo"
+    fi
+    # Item de lista ou linha de tabela cola no item anterior: as linhas em branco do fim do ledger saem,
+    # desde que a última linha com texto seja da mesma lista (depois de um título, a branca fica).
+    if ! integracao_e_paragrafo "$linha"; then
+      tmp=$(mktemp)
+      awk '{ L[NR] = $0 } END {
+        n = NR; while (n > 0 && L[n] == "") n--
+        if (n > 0 && (substr(L[n], 1, 2) == "- " || substr(L[n], 1, 1) == "|")) fim = n; else fim = NR
+        for (i = 1; i <= fim; i++) print L[i]
+      }' "$arquivo" > "$tmp"
+      cat "$tmp" > "$arquivo"
+      rm -f "$tmp"
     fi
     ult=$(tail -n 1 "$arquivo")
     if integracao_e_paragrafo "$linha" && [[ -n "$ult" ]]; then
