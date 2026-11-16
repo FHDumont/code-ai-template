@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Acrescenta um item na fila de uma fase paralela já aberta, no fragmento dela.
+# Acrescenta um item na fila de uma fase paralela já aberta, no fragmento dela (R-005).
 # Recusa se o worktree estiver sujo — a fase em execução não leva commit alheio no meio.
-# Uso: scripts/enfileirar.sh --na F-012 --linha '- **F-020** — exportar — depende de F-012' [--sem-push]
+# Uso: scripts/enfileirar.sh --na F-012 --linha '**F-020** — exportar — depende de F-012' [--sem-push]
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
