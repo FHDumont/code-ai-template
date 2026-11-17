@@ -17,9 +17,9 @@ canal=${CANAL_DIR:-${CANAL_HOME:-$HOME/.canal}/$projeto}
 rel=${1#"$canal"/}
 case "$rel" in /* | ../* | */../* | */./* | ./*) echo "espera falhou: o caminho '$rel' sai da raiz do canal" >&2; exit 2 ;; esac
 case "$rel" in */*/respostas/*.md) ;; *) echo "$uso" >&2; exit 2 ;; esac
-for v in INTERVALO TETO ESTAVEL; do
-  eval "val=\${CANAL_ESPERA_$v:-}"
-  case "$val" in *[!0-9]*) echo "espera falhou: CANAL_ESPERA_$v '$val' não é número" >&2; exit 2 ;; esac
+for v in CANAL_ESPERA_INTERVALO CANAL_ESPERA_TETO CANAL_ESPERA_ESTAVEL; do
+  val=${!v:-}
+  case "$val" in *[!0-9]*) echo "espera falhou: $v '$val' não é número" >&2; exit 2 ;; esac
 done
 intervalo=${CANAL_ESPERA_INTERVALO:-120}; teto=${CANAL_ESPERA_TETO:-14400}; estavel=${CANAL_ESPERA_ESTAVEL:-2}
 arq="$canal/$rel"
