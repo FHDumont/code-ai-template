@@ -11,3 +11,4 @@
 - F-metodo-v6 — Fases paralelas com integração serial → [`fases/F-metodo-v6.md`](fases/F-metodo-v6.md)
 - F-metodo-v8 — Melhorias genéricas de método vindas do Amplug → [`fases/F-metodo-v8.md`](fases/F-metodo-v8.md)
 - F-metodo-v9 — Corte anunciado e menu de execução no fim do planejamento → [`fases/F-metodo-v9.md`](fases/F-metodo-v9.md)
+- F-metodo-v7 — Disparador da trilha e espera da resposta no shell → [`fases/F-metodo-v7.md`](fases/F-metodo-v7.md)
