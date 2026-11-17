@@ -76,7 +76,7 @@ while [ "$volta" -le "$voltas" ]; do
       ;;
     pronto)
       pr=$(estado pr); case "$pr" in '' | *[!0-9]*) falha "estado pronto sem o número do pr" ;; esac
-      sai=$("$conferir" "$pr" --issue "$issue" 2>&1); rc=$?
+      sai=$("$conferir" "$pr" --issue "$issue" 2> /dev/null); rc=$?
       pend=(); while IFS= read -r l; do [ -n "$l" ] && pend+=("${l#pendente: }"); done <<< "$sai"
       if [ "$rc" = 0 ]; then res=ok; pend=(); else res=pendente; [ ${#pend[@]} -gt 0 ] || pend=("conferir-fecho saiu $rc")
       fi
