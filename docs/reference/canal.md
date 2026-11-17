@@ -93,6 +93,12 @@ A espera pela resposta é um loop de shell com `sleep`, nunca uma sequência de 
 
 Gerar vídeo, gerar imagem e usar browser são ação cara: a resposta é `status: pendente`, descreve o que faria e para. O dono aprova. Prefira API, SSH, CLI ou MCP. O projeto pode estreitar o que conta como ação cara (o que o dono já decidiu fazer em casa não é), desde que escreva aqui a regra dele.
 
+## Trilha
+
+Só a trilha fora do ciclo (`AGENTS.md` §Trilha fora do ciclo) usa esta seção; o contrato v1 acima não muda. O disparador `scripts/disparar-trilha.sh --skill <skill> --modelo <id> --effort <nível> [--bot <bot>] <issue>` roda a skill em `claude -p`. Modelo e effort são sempre informados (flag ou `TRILHA_MODELO`, `TRILHA_EFFORT`), sem valor de fábrica: faltando um, o disparo não roda. O `init` do stream tem de trazer o modelo informado (o id inteiro), senão `falha`.
+
+A skill grava `<raiz>/issue-<n>/estado.json` a cada disparo: `{"estado":"esperando|pronto|falha","espera":"<unidade>/<bot>/respostas/<nome>.md","pr":N,"motivo":"…"}`. `esperando` pede `espera`: o disparador chama `scripts/canal-esperar.sh` (loop de `sleep` em shell; `CANAL_ESPERA_INTERVALO` 120 s, `CANAL_ESPERA_TETO` 4 h; a resposta só vale estável e com `status:`) e dispara de novo, até `TRILHA_VOLTAS` voltas (8). `pronto` pede `pr` e é conferido pelo `scripts/conferir-fecho.sh`. Um aviso por disparo, `fim` ou `falha`, só com `--bot`.
+
 ## Proibido por bot
 
 Cada bot tem no `bots.yaml` uma lista `proibido:` do que ele não faz neste canal. A rotina a recebe no prompt; o agente de código a consulta antes de pedir. O modelo em `templates/canal/bots.yaml` traz o mínimo: não escrever em `pedidos/` nem fora de `respostas/`, não chamar o webhook, não copiar segredo, não gastar sem aprovação do dono e não inventar dado.
