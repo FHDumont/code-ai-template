@@ -20,7 +20,9 @@
       "Bash(gh issue view:*)",
       "Bash(gh pr view:*)",
       "Bash(gh pr checks:*)",
-      "Bash(gh run:*)"
+      "Bash(gh run:*)",
+      "Bash(scripts/canal-esperar.sh:*)",
+      "Bash(scripts/disparar-trilha.sh:*)"
     ],
     "deny": [
       "Bash(gh pr merge --admin*)",
