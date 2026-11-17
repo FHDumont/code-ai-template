@@ -45,7 +45,7 @@ CONTEXT.md                 linguagem ubíqua: 1 termo por conceito (preencha; cr
 └─ settings.json           registra os hooks como PreToolUse/Bash e as permissões dos scripts do método
 
 scripts/                   abrir, listar e integrar fases; o fecho comum (fechar-pr, conferir-fecho); o aviso do canal
-                           (canal-avisar) e o deploy segurado, opcionais; a validação é scripts/validar.sh (bash 3.2)
+                           (canal-avisar, canal-esperar, disparar-trilha) e o deploy segurado, opcionais; a validação é scripts/validar.sh (bash 3.2)
 docs/                      ← só arquivos VIVOS na raiz (estado atual)
 ├─ ROADMAP.md              fases futuras + a atual; 1 linha por fase
 ├─ CHANGELOG.md            1 linha por fase entregue (ledger, append-only)
