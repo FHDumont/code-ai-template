@@ -27,6 +27,7 @@ scripts/fechar-pr.test.sh
 scripts/conferir-fecho.test.sh
 scripts/canal-avisar.test.sh
 scripts/canal-esperar.test.sh
+scripts/disparar-trilha.test.sh
 scripts/fases-ativas.test.sh
 scripts/deploy-segurado.test.sh
 scripts/abrir-fase.test.sh
