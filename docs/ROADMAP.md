@@ -6,7 +6,4 @@
 
 ## Atual
 
-- **F-metodo-v7** — o disparador de uma trilha fora do ciclo e a espera da resposta no shell (o `canal-avisar` entrou na F-metodo-v8) — fecha em código o que falta do contrato v1 de `docs/reference/canal.md`, sem mudar o contrato.
-
-
 ## Próximas
